@@ -1,0 +1,1005 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>FAST Reading Coach</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<style>
+/* Layout: a keyring of 12 skills in 3 reporting-category rows. Each skill opens to Learn (tutorial) and Practice (FAST-style, one try). Practice = passage panel left, items right. */
+:root{
+  --bg:#EAF2FB; --paper:#FFFFFF; --paper2:#F4F7FC; --ink:#1A2242; --muted:#58628A; --line:#D3DDEE;
+  --gold:#F2B21B; --gold-ink:#8A5A00; --teal:#0E9C98; --coral:#EF5B52; --violet:#7656DD; --blue:#2A73E0; --green:#23995A;
+  --ok:#1E9A55; --no:#D8473F; --hl:#FFE36E;
+  --display:"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --read:"Literata",Georgia,"Times New Roman",serif;
+  --c:var(--blue);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1629; --paper:#18213A; --paper2:#1F2945; --ink:#EEF2FF; --muted:#A9B3D3; --line:#2E3A5C;
+  --gold:#FFC53D; --gold-ink:#FFD877; --teal:#2CC4BF; --coral:#FF7A71; --violet:#9C82FF; --blue:#5A9BFF; --green:#3DC47A;
+  --ok:#3DC47A; --no:#FF7A71; --hl:#7A6516; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1629; --paper:#18213A; --paper2:#1F2945; --ink:#EEF2FF; --muted:#A9B3D3; --line:#2E3A5C;
+  --gold:#FFC53D; --gold-ink:#FFD877; --teal:#2CC4BF; --coral:#FF7A71; --violet:#9C82FF; --blue:#5A9BFF; --green:#3DC47A;
+  --ok:#3DC47A; --no:#FF7A71; --hl:#7A6516; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,h3,h4{font-family:var(--display);font-weight:400;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.15}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.lg-gold{fill:var(--gold)} .lg-goldd{fill:var(--gold-ink)} .lg-paper{fill:var(--paper)}
+.lg-teal{fill:var(--teal)} .lg-coral{fill:var(--coral)} .lg-violet{fill:var(--violet)} .lg-blue{fill:var(--blue)} .lg-green{fill:var(--green)}
+.lg-stroke{stroke:var(--ink);stroke-width:3;stroke-linejoin:round}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--paper);border-bottom:3px solid var(--gold);
+  margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topin{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding-block:8px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;border:0;background:none;padding:0;text-align:left}
+.brand svg{width:62px;height:auto;flex:none}
+.wm{font-family:var(--display);font-size:1.22rem;line-height:1}
+.wm b{font-weight:400} .wm .t1{color:var(--coral)} .wm .t2{color:var(--blue)} .wm .t3{color:var(--violet)}
+.wm small{display:block;font-family:var(--body);font-size:.68rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;background:var(--paper2)}
+.seg button{border:0;background:none;padding:5px 11px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.pillbtn{border:2px solid var(--line);background:var(--paper2);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.pillbtn.gold{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 18%,var(--paper))}
+
+/* home */
+.hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;align-items:center;background:var(--paper);border:2px solid var(--line);border-radius:24px;padding:26px;margin-top:16px}
+.hero h1{font-size:clamp(2rem,5vw,3rem)} .hero h1 em{font-style:normal;color:var(--coral)}
+.hero p{max-width:62ch;margin:.6em 0}
+.biglogo{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.biglogo svg{width:min(220px,70%);height:auto}
+.biglogo .wm{font-size:clamp(1.5rem,4vw,2.1rem)}
+.biglogo .tag{font-size:.88rem;color:var(--muted);font-weight:700}
+.namebox{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.namebox input{border:2px solid var(--line);border-radius:12px;padding:10px 14px;min-width:0;flex:1 1 200px;background:var(--paper2)}
+.big-btn{border:0;border-radius:14px;padding:11px 20px;font-family:var(--display);font-size:1.15rem;color:#fff;background:var(--c);box-shadow:0 4px 0 color-mix(in srgb,var(--c) 60%,#000)}
+.big-btn:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,#000)}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}
+.howto div{background:var(--paper2);border-radius:14px;padding:10px 12px;font-size:.88rem}
+.howto b{display:block;font-family:var(--display);font-weight:400;font-size:1.05rem;color:var(--c)}
+.cat{margin-top:22px}
+.cat-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.cat-h .n{width:36px;height:36px;border-radius:12px;background:var(--cc);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:1.2rem}
+.cat-h h2{font-size:1.45rem}
+.cat-h .sum{margin-left:auto;font-size:.88rem;color:var(--muted);font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.mcard{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px 16px;border-top:6px solid var(--cc);min-height:150px}
+.mcard:hover{border-color:var(--cc)}
+.mcard .code{font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.mcard h3{font-size:1.2rem}
+.mcard p{margin:0;font-size:.84rem;color:var(--muted);line-height:1.35}
+.mcard .st{margin-top:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{white-space:nowrap;display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:.75rem;font-weight:700;border:2px solid var(--line);color:var(--muted)}
+.chip.m{background:var(--ok);border-color:var(--ok);color:#fff}
+.chip.a{background:var(--gold);border-color:var(--gold);color:#3a2700}
+.chip.k{background:var(--coral);border-color:var(--coral);color:#fff}
+.chip.l{border-color:var(--teal);color:var(--teal)}
+.minibar{flex:1 1 80px;height:10px;background:var(--paper2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.minibar i{display:block;height:100%;background:var(--cc)}
+
+/* module */
+.mod-head{display:flex;flex-wrap:wrap;align-items:center;gap:14px;background:var(--c);color:#fff;border-radius:22px;padding:16px 20px;margin-top:16px}
+.mod-head .code{background:rgba(0,0,0,.2);border-radius:999px;padding:3px 12px;font-weight:700;font-size:.85rem}
+.mod-head h2{font-size:clamp(1.5rem,3.6vw,2.1rem)}
+.mod-head p{margin:2px 0 0;opacity:.95;font-size:.95rem;max-width:70ch}
+.mod-head .back{margin-left:auto;background:rgba(255,255,255,.2);border:0;color:#fff;border-radius:999px;padding:6px 14px;font-weight:700}
+.tabs{display:flex;gap:8px;margin:14px 0}
+.tab{border:2px solid var(--line);background:var(--paper);border-radius:14px;padding:9px 16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.tab .n{width:24px;height:24px;border-radius:8px;background:var(--paper2);display:grid;place-items:center;font-size:.8rem}
+.tab[aria-selected="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,var(--paper));box-shadow:0 3px 0 var(--c)}
+.tab[aria-selected="true"] .n{background:var(--c);color:#fff}
+
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.grid2>*{min-width:0}
+.stack{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:18px 20px}
+.label{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--c)}
+.label .dot{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.card h3{font-size:1.35rem;margin:6px 0 6px}
+.card p{margin:.45em 0}
+.listen{margin-left:auto;border:0;background:color-mix(in srgb,var(--blue) 14%,var(--paper));color:var(--blue);border-radius:999px;padding:4px 10px;font-size:.78rem;font-weight:700;display:inline-flex;gap:5px;align-items:center;text-transform:none;letter-spacing:0}
+.what{border-color:var(--c);background:color-mix(in srgb,var(--c) 7%,var(--paper))}
+.asks{margin:.4em 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.asks li{background:var(--paper2);border-left:5px solid var(--c);border-radius:8px;padding:7px 12px;font-family:var(--read);font-size:.95rem}
+.vocab{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px}
+.flip{perspective:800px;border:0;background:none;padding:0;min-height:112px;text-align:left}
+.flip .in{position:relative;width:100%;height:100%;min-height:112px;transition:transform .5s;transform-style:preserve-3d}
+.flip[aria-pressed="true"] .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
+.flip .f{background:var(--c);color:#fff}
+.flip .f b{font-family:var(--display);font-weight:400;font-size:1.2rem;line-height:1.1}
+.flip .f small{opacity:.92;font-size:.75rem}
+.flip .b{background:var(--paper);border:2px solid var(--c);transform:rotateY(180deg);font-size:.86rem;line-height:1.3}
+.steps{list-style:none;margin:.5em 0 0;padding:0;display:grid;gap:8px;counter-reset:s}
+.steps li{display:flex;gap:10px;align-items:flex-start;counter-increment:s}
+.steps li::before{content:counter(s);flex:none;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#3a2700;font-weight:700;display:grid;place-items:center;font-size:.9rem}
+.ex-text{font-family:var(--read);background:var(--paper2);border-radius:14px;padding:12px 14px;white-space:pre-line}
+.think{margin-top:10px;background:color-mix(in srgb,var(--gold) 18%,var(--paper));border:2px dashed var(--gold);border-radius:14px;padding:10px 14px}
+.think b{color:var(--gold-ink)}
+.ready{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
+
+/* passage */
+.passage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);max-height:calc(100vh - 110px);overflow:auto;padding:0}
+.pbar{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--paper);border-bottom:2px solid var(--line);padding:10px 16px}
+.pbar .lbl{font-weight:700;font-size:.9rem;margin-right:auto}
+.toggle[aria-pressed="true"]{background:var(--hl);border-color:var(--gold);color:#3a2700}
+.ptext{padding:6px 18px 18px;font-family:var(--read);font-size:1rem;line-height:1.7}
+.ptext h3{font-family:var(--read);font-weight:600;font-size:1.2rem;margin:14px 0 2px}
+.ptext .by{font-family:var(--body);color:var(--muted);font-size:.82rem;margin-bottom:8px}
+.ptext h4{font-family:var(--body);font-weight:700;font-size:1.02rem;margin:14px 0 4px;color:var(--c)}
+.para{display:flex;gap:10px;align-items:flex-start;margin:0 0 10px}
+.pn{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:var(--paper2);font-family:var(--body);font-size:.75rem;font-weight:700;display:grid;place-items:center;margin-top:3px;padding:0}
+.pn:hover{border-color:var(--blue);color:var(--blue)}
+.para .tx{min-width:0}
+.sent{border-radius:4px;transition:background .2s}
+.hlmode .sent{cursor:pointer}
+.hlmode .sent:hover{background:color-mix(in srgb,var(--hl) 45%,transparent)}
+.sent.hl{background:var(--hl)}
+.spk{font-family:var(--body);font-weight:700;letter-spacing:.12em;font-size:.8rem;color:#fff;background:var(--c);display:inline-block;border-radius:6px;padding:2px 10px;margin:10px 0 6px}
+.side{border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--paper));border-radius:14px;padding:10px 14px;margin:6px 0 12px 36px;font-family:var(--body);font-size:.92rem}
+.fig{margin:6px 0 12px 36px;border:2px solid var(--line);border-radius:14px;padding:10px;background:var(--paper2)}
+.fig svg{width:100%;height:auto;display:block}
+.fig .cap{font-family:var(--body);font-size:.85rem;margin-top:6px}
+.pline{display:flex;gap:10px;font-family:var(--read)}
+.pline .ln{width:22px;text-align:right;color:var(--muted);font-family:var(--body);font-size:.72rem;padding-top:4px;flex:none;font-variant-numeric:tabular-nums}
+.stanza{margin:0 0 12px}
+.divider{border-top:3px dotted var(--line);margin:18px 0 6px}
+
+/* items */
+.item{background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:16px 18px}
+.item.right{border-color:var(--ok)} .item.wrong{border-color:var(--no)}
+.itop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.qnum{font-family:var(--display);font-size:1.1rem;color:var(--c)}
+.dok{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;border-radius:999px;padding:3px 9px;color:#fff}
+.dok1{background:var(--teal)} .dok2{background:var(--violet)} .dok3{background:var(--coral)}
+.typ{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.stem{font-weight:700;margin:0 0 10px}
+.part{margin-top:12px;padding-top:12px;border-top:2px dashed var(--line)}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:2px solid var(--line);background:var(--paper2);border-radius:14px;padding:9px 12px;line-height:1.4;width:100%}
+.opt .lt{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--paper);border:2px solid var(--line);font-weight:700;font-size:.85rem}
+.opt.box .lt{border-radius:6px}
+.opt[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--paper))}
+.opt[aria-pressed="true"] .lt{background:var(--c);color:#fff;border-color:var(--c)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 13%,var(--paper))}
+.opt.ok .lt{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.bad{border-color:var(--no);background:color-mix(in srgb,var(--no) 10%,var(--paper))}
+.opt.bad .lt{background:var(--no);border-color:var(--no);color:#fff}
+.opt:disabled{cursor:default}
+.hotbox{background:var(--paper2);border-radius:14px;padding:12px 14px;font-family:var(--read);line-height:1.8}
+.hs{border:0;background:none;padding:1px 3px;border-radius:5px;text-align:left;font-family:inherit;border-bottom:2px dotted color-mix(in srgb,var(--c) 50%,transparent);display:inline;line-height:inherit}
+.hs[aria-pressed="true"]{background:var(--c);color:#fff}
+.hs.ok{background:var(--ok);color:#fff} .hs.bad{background:var(--no);color:#fff}
+.mtwrap{overflow-x:auto}
+table.mt{border-collapse:separate;border-spacing:0;width:100%;font-size:.9rem}
+.mt th,.mt td{border-bottom:1px solid var(--line);padding:8px;text-align:center;vertical-align:middle}
+.mt th{font-size:.78rem;color:var(--muted)}
+.mt td:first-child,.mt th:first-child{text-align:left;min-width:150px}
+.mt input{width:22px;height:22px;accent-color:var(--c)}
+.mt td.ok{background:color-mix(in srgb,var(--ok) 18%,transparent)} .mt td.bad{background:color-mix(in srgb,var(--no) 15%,transparent)}
+.droptext{font-family:var(--read);line-height:2.2;background:var(--paper2);border-radius:14px;padding:12px 14px}
+.droptext select{border:2px solid var(--c);border-radius:10px;padding:4px 8px;background:var(--paper);max-width:100%;font-family:var(--body);font-size:.92rem}
+.droptext select.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--paper))}
+.droptext select.bad{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,var(--paper))}
+.olist{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.orow{display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:var(--paper2);border-radius:14px;padding:8px 10px}
+.orow .pos{flex:none;width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.85rem}
+.orow .txt{flex:1;min-width:0;line-height:1.35}
+.orow .mv{display:flex;flex-direction:column;gap:3px}
+.orow .mv button{width:34px;height:26px;border-radius:8px;border:2px solid var(--line);background:var(--paper);font-weight:700;line-height:1;padding:0}
+.orow.ok{border-color:var(--ok)} .orow.bad{border-color:var(--no)}
+.why{margin-top:12px;border-radius:14px;padding:10px 14px;font-size:.93rem}
+.why.ok{background:color-mix(in srgb,var(--ok) 12%,var(--paper));border:2px solid var(--ok)}
+.why.bad{background:color-mix(in srgb,var(--no) 8%,var(--paper));border:2px solid var(--no)}
+.why b{font-family:var(--display);font-weight:400;font-size:1.05rem}
+.qc-fb{margin-top:10px;border-radius:12px;padding:8px 12px;font-size:.93rem}
+.qc-fb.ok{background:color-mix(in srgb,var(--ok) 12%,var(--paper));border:2px solid var(--ok)}
+.qc-fb.hint{background:color-mix(in srgb,var(--gold) 20%,var(--paper));border:2px solid var(--gold)}
+.small-btn{border:0;background:var(--c);color:#fff;border-radius:12px;padding:8px 16px;font-weight:700;box-shadow:0 3px 0 color-mix(in srgb,var(--c) 55%,#000)}
+.small-btn:disabled{opacity:.45;box-shadow:none;cursor:default}
+.submitbar{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--paper);border:3px solid var(--c);border-radius:18px;padding:12px 16px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.prog{flex:1 1 160px;font-weight:700;font-size:.92rem}
+.prog .track{height:10px;background:var(--paper2);border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:5px}
+.prog .track i{display:block;height:100%;background:var(--c);transition:width .3s}
+
+/* score summary */
+.summary{border:3px solid var(--gold);background:var(--paper);border-radius:22px;padding:18px 20px}
+.sum-top{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+.ring{width:120px;height:120px;flex:none}
+.ring text{font-family:var(--display);fill:var(--ink)}
+.sum-top h3{font-size:1.6rem}
+.sum-top .lvl{margin-top:4px}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.tile{background:var(--paper2);border-radius:14px;padding:10px 12px}
+.tile .k{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.tile .v{font-family:var(--display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:8px;margin-top:6px}
+.bar{display:grid;grid-template-columns:60px 1fr 64px;gap:8px;align-items:center;font-size:.85rem;font-variant-numeric:tabular-nums}
+.bar .tr{height:14px;border-radius:999px;background:var(--paper);border:1px solid var(--line);overflow:hidden}
+.bar .fl{height:100%;border-radius:999px}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dots span{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:.78rem;font-weight:700;color:#fff}
+.dots .y{background:var(--ok)} .dots .n{background:var(--no)} .dots .p{background:var(--gold);color:#3a2700}
+
+.rep-table{width:100%;border-collapse:collapse;font-size:.92rem}
+.rep-table th{background:color-mix(in srgb,var(--cc) 14%,var(--paper));text-align:left;padding:8px 10px;font-size:.82rem}
+.rep-table td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:middle}
+.rep-table td.num{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rep-table .bn{font-size:.75rem;color:var(--muted)}
+.rep-cat{margin-top:16px;border:2px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.rep-cat h3{background:var(--cc);color:#fff;padding:10px 14px;font-size:1.15rem;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.rep-cat h3 span{margin-left:auto;font-family:var(--body);font-size:.9rem;font-weight:700}
+.tbl{overflow-x:auto}
+pre.copybox{white-space:pre-wrap;background:var(--paper2);border:2px solid var(--line);border-radius:14px;padding:12px;font-size:.82rem;max-height:240px;overflow:auto}
+
+footer{margin-top:34px;padding-top:16px;border-top:2px solid var(--line);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;color:var(--muted);font-size:.84rem}
+footer .brand svg{width:44px}
+.keytable{width:100%;border-collapse:collapse;font-size:.85rem}
+.keytable td,.keytable th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:50;width:100%;height:100%}
+
+@media (max-width:900px){
+  .grid2,.hero{grid-template-columns:minmax(0,1fr)}
+  .passage{position:static;max-height:none}
+  .mod-head .back{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 160 120">
+      <path class="lg-violet" d="M8 66 Q44 52 80 66 Q116 52 152 66 L152 112 Q116 100 80 114 Q44 100 8 112 Z"/>
+      <path class="lg-paper lg-stroke" d="M14 60 Q46 48 80 62 L80 106 Q46 94 14 106 Z"/>
+      <path class="lg-paper lg-stroke" d="M146 60 Q114 48 80 62 L80 106 Q114 94 146 106 Z"/>
+      <path class="lg-teal" d="M24 68 Q46 60 70 69 L70 73 Q46 64 24 72Z"/>
+      <path class="lg-coral" d="M24 80 Q46 72 70 81 L70 85 Q46 76 24 84Z"/>
+      <path class="lg-blue" d="M24 92 Q46 84 70 93 L70 97 Q46 88 24 96Z"/>
+      <path class="lg-green" d="M90 69 Q114 60 136 68 L136 72 Q114 64 90 73Z"/>
+      <path class="lg-gold" d="M90 81 Q114 72 136 80 L136 84 Q114 76 90 85Z"/>
+      <path class="lg-teal" d="M90 93 Q114 84 136 92 L136 96 Q114 88 90 97Z"/>
+      <g transform="translate(40 40) rotate(-22)">
+        <rect class="lg-gold lg-stroke" x="14" y="-6" width="84" height="12" rx="5"/>
+        <rect class="lg-gold lg-stroke" x="76" y="4" width="8" height="15" rx="2"/>
+        <rect class="lg-gold lg-stroke" x="88" y="4" width="8" height="21" rx="2"/>
+        <circle class="lg-gold lg-stroke" cx="0" cy="0" r="22"/>
+        <circle class="lg-paper lg-stroke" cx="0" cy="0" r="8"/>
+        <circle class="lg-goldd" cx="-10" cy="-12" r="3"/>
+      </g>
+      <path class="lg-coral" d="M128 14 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/>
+      <path class="lg-blue" d="M148 36 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z"/>
+      <path class="lg-green" d="M108 8 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z"/>
+    </symbol>
+    <symbol id="spk" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="top"><div class="topin">
+  <button class="brand" id="homeBtn" aria-label="Go to all skills">
+    <svg viewBox="0 0 160 120" role="img" aria-label="The Literacy Locksmith logo"><use href="#logo"/></svg>
+    <span class="wm"><b class="t1">The</b> <b class="t2">Literacy</b> <b class="t3">Locksmith</b><small>FAST Reading Coach · Grade 6</small></span>
+  </button>
+  <div class="tools">
+    <button class="pillbtn gold" id="scoresBtn">My Scores</button>
+    <span class="seg" role="group" aria-label="Read-aloud voice">
+      <button data-voice="female" aria-pressed="true">Female</button>
+      <button data-voice="male" aria-pressed="false">Male</button>
+      <button data-voice="mix" aria-pressed="false">Mix</button>
+    </span>
+    <button class="pillbtn" id="stopTalk">Stop</button>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <main id="main"></main>
+  <footer>
+    <div class="brand" style="cursor:default">
+      <svg viewBox="0 0 160 120" aria-hidden="true"><use href="#logo"/></svg>
+      <div>The Literacy Locksmith · Created and copyrighted by Donna Rees © 2026<br>
+      <span style="font-size:.76rem">Stories, articles, and speeches are original works written for this practice; student, school, and organization names in them are fictional. “Hope” is the thing with feathers by Emily Dickinson is in the public domain. Practice items are modeled on FAST item types and are not official test items.</span></div>
+    </div>
+    <button class="pillbtn" id="tBtn">Teacher</button>
+  </footer>
+  <div class="card" id="teacher" hidden style="margin-top:12px"></div>
+</div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<script>
+/* ================= PASSAGES ================= */
+const PASSAGES = {
+ cue:{label:"Read the story.",texts:[{title:"Cue Thirty-Two",by:"Original story",blocks:[
+  {p:"Lucia Reyes had practiced the final speech of <i>The Lighthouse Keeper</i> forty-one times. She knew exactly when to step toward the audience, when to lower her voice, and when the stage lights would rise like a sunrise behind her. Tonight was the last rehearsal before opening night, and everything had to be perfect."},
+  {p:"Halfway through her speech, the stage went black."},
+  {p:"“Seriously?” Lucia shouted toward the lighting booth. “If you can’t push one button, maybe you shouldn’t be here!”"},
+  {p:"The cast went silent. Up in the booth, Benji Tran, a sixth grader who had volunteered for stage crew, slowly pulled off his headset. A minute later, the booth door clicked shut behind him."},
+  {p:"After rehearsal, Mr. Okafor found Lucia packing her bag. “A play is like a lighthouse,” he said quietly. “The keeper gets the applause. But if no one keeps the lamp burning, the ships still crash.” He set a wrinkled sheet of paper on the chair beside her and walked away."},
+  {p:"It was Benji’s cue sheet. Every cue was color-coded in neat handwriting. Next to Cue 32, he had written: <i>Wait for Lucia to say “home.”</i> Lucia’s stomach dropped. Tonight, she had changed her line. She had said “harbor” instead of “home.” Benji had been waiting for a word she never said."},
+  {p:"The next day at lunch, Lucia found Benji sitting alone. “I changed the line,” she said. “The mistake was mine, not yours. I’m sorry I yelled.” Benji stared at his tray for a long moment. Then he shrugged. “Opening night is at seven,” he said. “I’ll be in the booth at six.”"},
+  {p:"On opening night, just before Lucia’s final speech, the main lighting board flickered and died. The audience murmured in the darkness. Lucia froze, but she heard a soft click from the booth. Benji had already switched to the backup board. As Lucia said “home,” the lights rose behind her like a sunrise."},
+  {p:"During the curtain call, Lucia ran offstage, climbed the ladder to the booth, and pulled a surprised Benji onto the stage beside her. As the audience clapped, she leaned toward him. “The keeper,” she whispered, “isn’t the only one who keeps the light.”"}
+ ]}]},
+ booth:{label:"Read the story. It is told by two narrators.",texts:[{title:"Booth 14",by:"Original story",blocks:[
+  {spk:"JADA"},
+  {p:"Marcus was late again. I had already taped our title, “Can Plants Hear?,” across the top of the trifold board, and the judges were three booths away. I checked the hallway for the hundredth time. Typical, I thought—I did the research, I watered the bean plants every day, and he gets his name on the project too."},
+  {p:"When he finally rushed in, his hoodie was inside out and he was carrying a shoebox like it held eggs. “Sorry,” he mumbled. I didn’t answer. I just pointed at the empty spot where our speaker was supposed to go."},
+  {spk:"MARCUS"},
+  {p:"The speaker died at 9:40 last night. I know because I was staring at it when the music stopped and the little blue light blinked out. Without it, our bean plants couldn’t “hear” anything, and Jada’s whole experiment would fall apart."},
+  {p:"So I took it apart on the kitchen table. Grandpa found me at midnight, still twisting wires, and instead of sending me to bed, he pulled up a chair and showed me how to solder. We finished at 2:15. This morning I missed the bus and ran the whole twelve blocks."},
+  {p:"When I got to Booth 14, Jada wouldn’t even look at me. I wanted to tell her everything, but the judges were coming, so I just opened the shoebox."},
+  {spk:"JADA"},
+  {p:"Inside was our speaker, wrapped in a dish towel, with a shiny new wire twisted along its side. “It broke,” Marcus said. “Grandpa and I fixed it.” He looked so tired that my angry speech melted away before I could say it."},
+  {p:"The judges arrived just as the music started playing. I glanced at Marcus and whispered, “Thank you.” He grinned. Maybe a partner isn’t someone who does everything you do. Maybe it’s someone who does the part you can’t see."}
+ ]}]},
+ seawall:{label:"Read the article.",texts:[{title:"Living Seawalls: Walls That Welcome Sea Life",by:"Original article",blocks:[
+  {p:"Along many coastlines, tall walls of concrete stand between the land and the sea. These walls, called seawalls, protect homes, roads, and businesses from waves and storms. But scientists have noticed a problem: most seawalls do a great job protecting people and a poor job supporting sea life. Now, engineers and biologists are working together to change that."},
+  {h:"The Problem with Flat Walls"},
+  {p:"Before seawalls were built, many shorelines had rocks, mangrove roots, or rough reefs. These surfaces were full of cracks and crevices where oysters, barnacles, crabs, and small fish could hide and grow. A smooth concrete wall offers almost none of these hiding places. When the tide goes out, the flat surface dries quickly in the sun, and few creatures can survive there."},
+  {p:"Scientists describe this as a loss of habitat. A <b>habitat</b> is the natural home where a plant or animal finds food, water, and shelter. As more coastlines are covered with smooth walls, many sea creatures lose the places they need to live."},
+  {h:"A Wall with Wrinkles"},
+  {p:"To solve this problem, designers have created “living seawalls.” Instead of a flat surface, a living seawall is covered with textured panels. The panels have grooves, bumps, and small pockets that copy the shape of natural rocks and roots. Some pockets are shaped like tiny bowls that hold seawater even at low tide, giving creatures a place to stay wet."},
+  {fig:"seawall",cap:"<b>Figure 1.</b> Side view of two wall panels. Left: a flat panel with nothing for sea life to hold onto. Right: a living seawall panel with grooves, bumps, and water-holding pockets where oysters and barnacles can attach."},
+  {p:"The panels can be attached to walls that already exist, so a city does not have to tear down its old seawall to make it friendlier to sea life."},
+  {side:"<b>Did You Know?</b> A single adult oyster can filter dozens of gallons of seawater in one day. More oysters living on a seawall can mean cleaner water nearby."},
+  {h:"Early Results"},
+  {p:"In test projects in places such as Sydney, Australia, and Miami, Florida, scientists have compared textured panels with plain concrete. In these studies, the textured panels generally attracted a greater variety of sea life than the flat walls nearby."},
+  {p:"Living seawalls cannot replace natural shorelines, and scientists are still studying how well they work over many years. Still, the early results give scientists reason to be hopeful. With a little creativity, a wall built to protect people can be both a shield and a home."}
+ ]}]},
+ cans:{label:"Read both accounts of the same event.",texts:[
+  {title:"Account 1: Students Collect 4,312 Cans for Storm Relief",by:"The Eagle Eye, Palmetto Middle School newspaper",blocks:[
+   {p:"Students at Palmetto Middle School collected 4,312 cans of food during last week’s “Great Can Count,” a five-day drive to help families affected by Hurricane Ivy."},
+   {p:"The drive was organized by the school’s Student Council. Each homeroom competed to bring in the most cans. Ms. Delgado’s sixth-grade homeroom won with 611 cans and earned a pizza party."},
+   {p:"On Thursday, heavy rain forced the council to move the collection tables from the courtyard into the gym, delaying the count by two hours."},
+   {p:"All donations were delivered Saturday to the Lakeside Community Pantry. Pantry director Mr. Simmons said the food would help about 300 families this month."},
+   {p:"The Student Council plans to hold the drive again next fall."}]},
+  {title:"Account 2: Why I’ll Never Forget the Great Can Count",by:"Ava Brooks, Student Council President, speaking at the awards assembly",blocks:[
+   {p:"When we started the Great Can Count, I was worried we would collect maybe a few hundred cans. I was wrong, and I have never been happier to be wrong."},
+   {p:"On Thursday, the rain came down so hard that our tables were swimming. We could have quit. Instead, thirty kids formed a line from the courtyard to the gym and passed every single box hand to hand, soaking wet and laughing the whole time. That was when I knew this drive was bigger than a contest."},
+   {p:"On Saturday, I helped unload the cans at the pantry. A little girl, maybe five years old, was waiting with her mom. She pointed at a can of peaches and asked if it was for her. Her mom’s eyes filled with tears. So did mine."},
+   {p:"We collected 4,312 cans. But numbers don’t tell the whole story. Every can was a meal, and every meal was a family that felt a little less alone after the storm."},
+   {p:"Next fall, we’re doing it again, and I want every single one of you in that line. Sign up at the Student Council table this Friday. Bring your rain boots."}]}
+ ]},
+ recess:{label:"Read the editorial.",texts:[{title:"Bring Recess Back to Middle School",by:"Jordan Miles, grade 8, student newspaper editorial",blocks:[
+  {p:"Every day at our school, students sit in chairs for almost seven hours. We sit in class, sit at lunch, and sit on the bus. Our school should add a fifteen-minute recess break to the middle school schedule."},
+  {p:"Health experts agree that young people ages 6 to 17 need at least 60 minutes of physical activity every day. Middle schoolers are young people ages 6 to 17. Most of us get far less than 60 minutes of activity during the school day. Therefore, our school is not giving students enough chance to meet a basic health need."},
+  {p:"Schools that have tried recess have seen results. When Cedar Creek Middle School added a break last year, teachers said students focused better after lunch. At Bayview Middle, the number of students sent to the office dropped. At Oak Hill Middle, students reported feeling less stressed. School after school, the pattern is the same: recess helps students learn."},
+  {p:"Some people argue that recess would take away valuable class time. However, fifteen minutes is only about four percent of a seven-hour day. If a short break helps students pay attention for the rest of the afternoon, then recess does not waste learning time. It protects it."},
+  {p:"Our principal and school board should add recess next semester. Our bodies, and our grades, will thank them."}
+ ]}]},
+ storm:{label:"Read the personal narrative.",texts:[{title:"The Night the Lights Went Out",by:"Original personal narrative",blocks:[
+  {p:"The storm arrived like a guest nobody had invited. By dinnertime, the wind was rattling our windows, and the palm trees in our yard bent so low I was sure they would snap."},
+  {p:"Then, with a loud pop, the power went out. The house fell silent. No fan, no refrigerator hum, no TV. My little brother grabbed my arm so hard I thought he would never let go. I waited a hundred years for the lights to come back on."},
+  {p:"Grandma did not panic. She lit three candles, set them on the kitchen table, and pulled out an old deck of cards. “When the sky gets loud,” she said, “we get louder.” Then she started laughing at her own terrible card tricks."},
+  {p:"Her laughter was a lantern. It pushed the darkness back into the corners of the room. Soon my brother was laughing too, and the howling wind outside sounded more like a grumpy old dog than a monster."},
+  {p:"Around midnight, our neighbor Mr. Patel knocked on the door with a flashlight and a cooler full of ice. “Figured you could use this,” he said. Three phones glowed on the table as we texted our cousins that we were safe."},
+  {p:"In the morning, the yard was a mess of branches, but the sun came up anyway, bright and steady. I learned something that night: storms are loud, but hope can be quiet. It sits with you at the kitchen table and refuses to leave."}
+ ]}]},
+ hope:{label:"Read the poem and the personal narrative. They were written about 160 years apart.",texts:[
+  {title:"“Hope” is the thing with feathers",by:"Emily Dickinson (written about 1861, first published 1891)",blocks:[
+   {poem:["“Hope” is the thing with feathers –","That perches in the soul –","And sings the tune without the words –","And never stops – at all –"]},
+   {poem:["And sweetest – in the Gale – is heard –","And sore must be the storm –","That could abash the little Bird","That kept so many warm –"],start:5},
+   {poem:["I’ve heard it in the chillest land –","And on the strangest Sea –","Yet – never – in Extremity,","It asked a crumb – of Me."],start:9}]},
+  {ref:"storm"}
+ ]},
+ speech:{label:"Read the speech.",texts:[{title:"Let’s Adopt Our Beach",by:"Kayla Johnson, speech to the Student Council",blocks:[
+  {p:"Good afternoon, Student Council members. My name is Kayla Johnson, and for the past two years I have volunteered with the Coastal Kids Club, where I have helped pick up more than 200 pounds of trash from local beaches. I am here to ask you to have our school adopt Sunset Beach."},
+  {p:"Last month, I found a baby sea turtle tangled in a plastic six-pack ring. Its tiny flippers were scraped and bleeding as it struggled toward the water. I will never forget how helpless it looked."},
+  {p:"Sadly, that turtle is not alone. According to our county’s beach survey, volunteers removed 3,800 pieces of plastic from Sunset Beach last year alone. Plastic can take hundreds of years to break down, so every piece we leave behind stays in the ocean for generations."},
+  {p:"Adopting the beach would cost our school nothing. The city provides gloves, bags, and grabbers for free. All we need is one Saturday cleanup each month."},
+  {p:"Our marine science teacher, Dr. Fields, who has studied ocean pollution for fifteen years, has already agreed to lead the first cleanup."},
+  {p:"Imagine bringing your little brother or sister to a beach where the sand is clean and the turtles are safe. We can make that beach real. Please vote yes."}
+ ]}]},
+ museum:{label:"Read the passage. Pay attention to the underlined words.",texts:[{title:"A Day at the Museum of Discovery",by:"Original passage",blocks:[
+  {p:"Our class trip to the Museum of Discovery began in the Hall of Time. A <u>chronological</u> display showed famous inventions, starting with the oldest and ending with the newest."},
+  {p:"In the Space Room, we took turns looking through a <u>telescope</u> at a model of Saturn. Nearby, a glass case held the <u>autobiography</u> of an astronaut, with notes in her own handwriting."},
+  {p:"The Earth Room was all about <u>geology</u>. A guide showed us layers of rock and explained how scientists use them to <u>predict</u> where earthquakes might happen."},
+  {p:"Before lunch, we stopped at the Transportation Gallery. My favorite exhibit was a tiny, <u>portable</u> radio from the 1950s. Its speaker was so quiet that the music was barely <u>audible</u>."},
+  {p:"Finally, we became <u>spectators</u> at the Bridge Challenge, where teams raced to <u>construct</u> a bridge out of straws. On the wall above the stage, an <u>inscription</u> carved in stone read: “Wonder is where discovery begins.”"}
+ ]}]},
+ newkid:{label:"Read the story. Use context clues to figure out word meanings.",texts:[{title:"The New Kid",by:"Original story",blocks:[
+  {p:"On the first day at his new school, Omar was so <u>apprehensive</u> that his hands shook as he opened the classroom door. He worried that no one would talk to him."},
+  {p:"A tall girl in the front row looked at him and <u>smirked</u>. Omar felt his face burn. But a boy named Theo waved him over. “Ignore her,” Theo said. “She acts <u>aloof</u>, distant and cold, with everyone at first. She’s actually nice once you know her.”"},
+  {p:"By lunch, Theo had shown Omar the shortcut to the gym, the best table in the cafeteria, and the vending machine that sometimes gave two snacks. Theo was generous with his time, not <u>stingy</u> like Omar’s old lab partner, who never shared anything."},
+  {p:"In science class, the teacher asked everyone to describe something <u>tenacious</u>, like a weed that keeps growing through cracks in the sidewalk or a dog that will not let go of its rope."},
+  {p:"When the final bell rang, Omar realized he had <u>made a mountain out of a molehill</u>. He walked home grinning, already looking forward to tomorrow."}
+ ]}]}
+};
+
+/* ================= MODULES (tutorial + practice) ================= */
+const CATS = [
+ {n:1,name:"Reading Prose and Poetry",color:"var(--coral)"},
+ {n:2,name:"Reading Informational Text",color:"var(--blue)"},
+ {n:3,name:"Reading Across Genres & Vocabulary",color:"var(--violet)"}
+];
+
+const MODS = [
+/* ---------- R.1.1 ---------- */
+{code:"ELA.6.R.1.1",cat:1,short:"Characters & Plot",bench:"Analyze how the interaction between characters contributes to the development of a plot in a literary text.",passage:"cue",
+ learn:{
+  what:"Characters affect each other. What one character says or does makes another character react, and those reactions push the plot forward. Interactions can start the conflict, build the rising action, cause the climax (turning point), and lead to the resolution.",
+  asks:["How does ___’s reaction to ___ affect the plot?","Which interaction is the turning point of the story?","How does the conversation between ___ and ___ move the plot forward?"],
+  words:[["Plot","story events","The sequence of events: exposition, rising action, climax, falling action, resolution."],["Conflict","the problem","The struggle or problem the characters face."],["Interaction","say + do","What characters say and do to each other."],["Turning point","the climax","The moment that changes the direction of the story."]],
+  steps:["Find the interaction: WHO said or did WHAT to WHOM?","Ask, “Because of this, what happens next?”","Connect it to a plot stage: conflict, rising action, climax, or resolution.","Pick the answer that shows CAUSE → EFFECT, not just a summary."],
+  example:{text:"Mia borrowed her brother Leo’s skateboard without asking and scratched it. When Leo saw the scratch, he refused to drive her to soccer tryouts. Mia had to call her coach and explain what she had done. The coach drove her, but only after Mia promised to pay for the repair.",
+   q:"How does Leo’s reaction affect the plot?",a:"It forces Mia to find another ride, which leads her to admit her mistake to her coach.",
+   think:"Leo’s reaction = he refuses to drive her. Because of that, Mia has to call her coach. Because she calls her coach, she has to explain what she did. So Leo’s reaction causes the next events. An answer like “Leo is angry” only describes him. It doesn’t show what his reaction causes in the plot."},
+  check:{stem:"In the Mia story, which event is caused by Mia’s conversation with her coach?",opts:["Mia promises to pay for the repair.","Mia borrows the skateboard.","Leo sees the scratch.","Mia scratches the skateboard."],ans:0,hint:"Find what happens AFTER Mia talks to the coach.",why:"The coach agrees to drive Mia only after she promises to pay. The conversation causes that promise."}
+ },
+ items:[
+  {id:"c1",dok:2,type:"mc",stem:"How does Lucia’s reaction to the missed cue in paragraph 3 affect the plot?",opts:["It causes Benji to leave the booth, which creates the conflict of whether he will return for opening night.","It convinces Mr. Okafor to cancel the rehearsal and postpone opening night.","It makes the cast cheer for Lucia because she is defending the play.","It causes Lucia to change her final line from “home” to “harbor.”"],ans:0,why:"Lucia’s harsh words make Benji pull off his headset and leave (paragraph 4). Now the show might not have a lighting person, which creates the main conflict."},
+  {id:"c2",dok:2,type:"mc",stem:"How does Mr. Okafor’s interaction with Lucia in paragraph 5 move the plot forward?",opts:["He leaves Benji’s cue sheet for her, which leads her to discover that the missed cue was her own mistake.","He tells her she will lose her role, which makes her practice harder.","He explains how the lighting board works, which helps her fix it herself.","He asks Benji to apologize to Lucia, which ends the conflict."],ans:0,why:"The cue sheet shows “Wait for Lucia to say ‘home,’” and Lucia realizes she said “harbor.” This discovery sets up her apology."},
+  {id:"c3",dok:1,type:"order",stem:"Put the events in the order they happen in the story. Use the arrows to move each event.",items:["Benji misses Cue 32 during the last rehearsal.","Lucia yells at Benji, and he leaves the booth.","Lucia reads Benji’s cue sheet and realizes she changed her line.","Lucia apologizes to Benji at lunch.","Benji switches to the backup board on opening night."],why:"Each interaction causes the next event: the missed cue → Lucia yells → the cue sheet → the apology → Benji saves the show."},
+  {id:"c4",dok:3,type:"ebsr",a:{stem:"Part A: Which interaction is the turning point that makes the story’s resolution possible?",opts:["Lucia admits her mistake to Benji, and he agrees to come back.","Mr. Okafor compares a play to a lighthouse.","The cast goes silent after Lucia yells.","The audience claps during the curtain call."],ans:0},
+   b:{stem:"Part B: Which quotation best supports the answer to Part A?",opts:["“Opening night is at seven,” he said. “I’ll be in the booth at six.”","Lucia Reyes had practiced the final speech of The Lighthouse Keeper forty-one times.","“A play is like a lighthouse,” he said quietly.","The audience murmured in the darkness."],ans:0},
+   why:"Without Benji’s decision to return, no one would have been in the booth when the board failed. His words “I’ll be in the booth at six” show the apology changed the direction of the story."},
+  {id:"c5",dok:2,type:"hot",stem:"Read paragraph 8. Select the sentence that shows the action Benji takes that saves the performance.",sents:["On opening night, just before Lucia’s final speech, the main lighting board flickered and died.","The audience murmured in the darkness.","Lucia froze, but she heard a soft click from the booth.","Benji had already switched to the backup board.","As Lucia said “home,” the lights rose behind her like a sunrise."],ans:[3],why:"Benji switching to the backup board is the action that rescues the show. It is the result of his returning after Lucia’s apology."}
+ ]},
+/* ---------- R.1.2 ---------- */
+{code:"ELA.6.R.1.2",cat:1,short:"Theme",bench:"Analyze the development of stated or implied theme(s) throughout a literary text.",passage:"cue",
+ learn:{
+  what:"A theme is the message or lesson about life that the author wants readers to understand. It can be stated or implied (hinted at). A theme develops throughout the story through what characters learn, how they change, and how the conflict is solved.",
+  asks:["Which statement best describes a theme of the story?","How does the author develop the theme?","Which TWO details best support the theme?","How does ___ change, and how does this help develop the theme?"],
+  words:[["Theme","life lesson","A complete sentence about life that applies to everyone, not just the characters."],["Topic","one word","A subject like friendship or honesty. A topic is NOT a theme."],["Implied","hinted","Not said directly. You figure it out from clues."],["Develop","grows","The theme builds from the beginning, through the middle, to the end."]],
+  steps:["Name the topic in one or two words.","Ask: What does the main character learn, or how do they change?","Turn it into a lesson for EVERYONE (no character names).","Check that details from the beginning, middle, AND end support it."],
+  example:{text:"Sam told the class he had read the whole book. During the quiz, he couldn’t answer a single question. Afterward, he admitted the truth to his teacher, who gave him a second chance. That night, he read three chapters.",
+   q:"Which is the best theme?",a:"Being honest about a mistake can open the door to a second chance.",
+   think:"Topic: honesty. Sam lies, then tells the truth, and then he gets a second chance. A good theme is a full sentence that fits anyone, so “Honesty” alone is only a topic. “Sam should read more” is just about Sam, so it isn’t a theme either."},
+  check:{stem:"Which of these is a TOPIC, not a theme?",opts:["Honesty","Telling the truth builds trust.","Mistakes can help us grow.","Kindness can change someone’s day."],ans:0,hint:"A topic is just one or two words. A theme is a full sentence.",why:"“Honesty” is only a topic. The other choices are full-sentence lessons, which makes them themes."}
+ },
+ items:[
+  {id:"t1",dok:2,type:"mc",stem:"Which statement best expresses a theme of the story?",opts:["Every person’s role matters, even when the audience cannot see it.","Practice makes perfect.","Theater is the most exciting kind of art.","It is better to work alone than with a team."],ans:0,why:"Lucia learns that Benji’s hidden work in the booth is as important as her speech. The lighthouse comparison and the curtain call both support this message."},
+  {id:"t2",dok:2,type:"ms",n:2,stem:"Which TWO details help develop the theme that everyone’s role matters? Select TWO answers.",opts:["Mr. Okafor says that if no one keeps the lamp burning, “the ships still crash.”","Lucia pulls Benji onto the stage during the curtain call.","Lucia knew exactly when to lower her voice.","Benji is a sixth grader who volunteered for stage crew.","The audience murmured in the darkness."],ans:[0,1],why:"Mr. Okafor’s words show that the unseen helpers matter, and pulling Benji onstage shows that Lucia now honors his role. The other choices are just details. They don’t carry the message."},
+  {id:"t3",dok:3,type:"mc",stem:"How does Mr. Okafor’s comparison of a play to a lighthouse help develop the theme?",opts:["It shows that the “keeper” depends on helpers no one sees, which prepares Lucia and the reader to value Benji’s work.","It shows that the play takes place in a real lighthouse.","It suggests that Lucia should quit acting and run the lights.","It explains why the lighting board breaks on opening night."],ans:0,why:"The comparison plants the theme in the middle of the story. Lucia repeats the idea at the end (“The keeper isn’t the only one who keeps the light”), which shows the theme has developed."},
+  {id:"t4",dok:3,type:"ebsr",a:{stem:"Part A: How does Lucia change from the beginning to the end of the story?",opts:["She goes from focusing only on her own performance to recognizing Benji’s contribution.","She goes from being shy to being confident onstage.","She goes from loving theater to wanting to quit.","She goes from trusting Benji to blaming him."],ans:0},
+   b:{stem:"Part B: Which sentence best shows this change?",opts:["“The keeper,” she whispered, “isn’t the only one who keeps the light.”","Tonight was the last rehearsal before opening night, and everything had to be perfect.","Lucia froze, but she heard a soft click from the booth.","The cast went silent."],ans:0},
+   why:"At the start, “everything had to be perfect” for HER speech. At the end, she shares the spotlight and says the keeper isn’t the only one who matters."},
+  {id:"t5",dok:2,type:"drop",stem:"Choose the words that correctly complete the sentences.",text:"At the beginning of the story, Lucia believes that {0}. By the end, she understands that {1}.",menus:[["the play depends mostly on her performance","the lighting crew is the most important part","the play will be canceled"],["the people behind the scenes are just as important","she should rehearse her speech more","Benji should become an actor"]],ans:[0,0],why:"Lucia’s change from “it’s all about me” to “we all keep the light” is how the author develops the theme."}
+ ]},
+/* ---------- R.1.3 ---------- */
+{code:"ELA.6.R.1.3",cat:1,short:"Narrators & Point of View",bench:"Explain the influence of multiple narrators and/or shifts in point of view in a literary text.",passage:"booth",
+ learn:{
+  what:"The narrator is the voice telling the story. When a story has more than one narrator, or the point of view shifts, readers see events from different sides. This changes what we know and how we feel about characters. It can also create surprise or suspense.",
+  asks:["How does the shift in narrator affect the reader’s understanding of ___?","What does the reader know that ___ does not know?","Why does the author include the section told by ___?"],
+  words:[["First person","I, me, my","The narrator is a character in the story."],["Third person","he, she, they","The narrator is outside the story."],["Multiple narrators","2+ voices","Different characters take turns telling the story."],["Dramatic irony","reader knows more","The reader knows something a character does not."]],
+  steps:["Mark who is telling each section (look for names, headings, and pronouns).","List what each narrator knows and feels.","Find the gap: what does one narrator know that the other doesn’t?","Explain the effect: it changes our opinion, builds suspense, or shows a misunderstanding."],
+  example:{text:"DEV: Nobody saved me a seat at lunch. Some best friend Kai is.\nKAI: I spent lunch in the nurse’s office with a bloody nose, wishing I could text Dev.",
+   q:"What is the effect of switching to Kai as narrator?",a:"The reader learns that Dev misunderstood. Kai wasn’t ignoring him.",
+   think:"Dev’s section makes Kai look like a bad friend. Kai’s section gives information Dev doesn’t have. Now the reader knows more than Dev, and we feel differently about Kai."},
+  check:{stem:"Which point of view uses the pronouns I, me, and my for the narrator?",opts:["First person","Third person","Second person","No narrator"],ans:0,hint:"Is the narrator inside the story talking about himself or herself?",why:"First-person narrators are characters who tell the story using I, me, and my."}
+ },
+ items:[
+  {id:"v1",dok:1,type:"mc",stem:"From which point of view is paragraph 1 told?",opts:["First person, by Jada","First person, by Marcus","Third person, by a narrator outside the story","Third person, from the judges’ point of view"],ans:0,why:"The section is labeled JADA and uses “I” and “our,” so it is first person from Jada’s point of view."},
+  {id:"v2",dok:2,type:"mc",stem:"What does the reader learn from Marcus’s section that Jada does not know when he arrives?",opts:["The speaker broke the night before, and Marcus stayed up late fixing it.","Marcus forgot about the science fair.","Jada did most of the research.","The judges were three booths away."],ans:0,why:"Paragraphs 3–4 reveal the broken speaker and the late-night repair. Jada doesn’t learn this until the shoebox is opened."},
+  {id:"v3",dok:2,type:"match",stem:"Which narrator’s section reveals each detail? Select one box in each row.",cols:["Jada’s section","Marcus’s section"],rows:["The project title is “Can Plants Hear?”","Grandpa teaches Marcus how to solder.","Marcus misses the bus and runs twelve blocks.","Jada whispers “Thank you.”"],ans:[0,1,1,0],why:"Marcus’s section gives the reader his private night of work. Jada’s sections show what she sees and feels at the booth."},
+  {id:"v4",dok:2,type:"ebsr",a:{stem:"Part A: How does switching to Marcus as narrator affect how the reader views him?",opts:["It shows that Jada’s belief that he is lazy is wrong.","It shows that he does not care about the project.","It shows that he is angry at Jada.","It shows that he wants to win more than Jada does."],ans:0},
+   b:{stem:"Part B: Which sentence from Marcus’s section best supports Part A?",opts:["Grandpa found me at midnight, still twisting wires, and instead of sending me to bed, he pulled up a chair and showed me how to solder.","When I got to Booth 14, Jada wouldn’t even look at me.","I wanted to tell her everything, but the judges were coming, so I just opened the shoebox.","Without it, our bean plants couldn’t “hear” anything."],ans:0},
+   why:"Working until midnight proves Marcus is NOT lazy. Only his narration could show this, because Jada wasn’t there."},
+  {id:"v5",dok:2,type:"hot",stem:"Read paragraph 1. Select the sentence that best shows Jada’s misunderstanding of Marcus.",sents:["Marcus was late again.","I had already taped our title, “Can Plants Hear?,” across the top of the trifold board, and the judges were three booths away.","I checked the hallway for the hundredth time.","Typical, I thought—I did the research, I watered the bean plants every day, and he gets his name on the project too."],ans:[3],why:"Jada thinks Marcus is lazy and taking credit. The reader soon learns this is wrong, and that is dramatic irony."},
+  {id:"v6",dok:3,type:"mc",stem:"Why does the author most likely end the story with Jada as the narrator?",opts:["To show how her thinking changes once she learns the truth, which reveals the story’s message about partners.","To prove that Jada did more work than Marcus.","To explain step by step how the speaker was repaired.","To describe the judges’ final decision."],ans:0,why:"Ending with Jada lets readers see her anger melt and hear her new idea: a partner does “the part you can’t see.”"}
+ ]},
+/* ---------- R.2.1 ---------- */
+{code:"ELA.6.R.2.1",cat:2,short:"Text Sections & Features",bench:"Explain how individual text sections and/or features convey meaning in texts.",passage:"seawall",
+ learn:{
+  what:"Authors of informational texts organize their writing into sections and use text features such as headings, bold words, captions, diagrams, and sidebars. Each section and feature has a job. Together, they help readers understand the author’s ideas.",
+  asks:["What is the purpose of the heading ___?","How does the diagram (or Figure 1) help the reader understand ___?","How does the section ___ contribute to the article?","What is the purpose of the sidebar?"],
+  words:[["Heading","section title","Tells what a section is mostly about."],["Caption","picture words","Explains what a picture or diagram shows."],["Sidebar","bonus box","Extra related information set apart from the main text."],["Bold term","key word","An important word, often defined right there."]],
+  steps:["Name the feature or section.","Read exactly what it says.","Ask: What does this add that the paragraphs alone don’t?","Connect it to the author’s big idea."],
+  example:{text:"Heading: “Why Bees Dance”\nParagraph: When a honeybee finds flowers, it returns to the hive and performs a “waggle dance.” The direction and length of the dance tell other bees where the food is.",
+   q:"What is the purpose of the heading?",a:"It tells readers the section will explain the reason bees dance.",
+   think:"The heading asks “why,” so it prepares me to read for a reason. The paragraph gives that reason: the dance shows other bees where the food is. So the heading tells me what the section will explain."},
+  check:{stem:"Which text feature explains what a picture or diagram shows?",opts:["Caption","Heading","Glossary","Title"],ans:0,hint:"Look right under or beside a picture.",why:"A caption sits near a picture and explains what it shows."}
+ },
+ items:[
+  {id:"s1",dok:1,type:"mc",stem:"What is the purpose of the heading “A Wall with Wrinkles”?",opts:["It tells readers that the section describes the textured design of living seawalls.","It tells readers that old seawalls are cracking and falling apart.","It introduces a story about a wrinkled sea creature.","It explains why scientists dislike all walls."],ans:0,why:"“Wrinkles” describes the grooves, bumps, and pockets that make living seawalls different. That is what paragraphs 4 and 5 explain."},
+  {id:"s2",dok:2,type:"mc",stem:"How does Figure 1 help the reader understand the article?",opts:["It lets readers compare a flat panel with a textured panel, so the difference is easy to see.","It shows how waves destroy homes during storms.","It lists the cities that have built living seawalls.","It proves that oysters filter water."],ans:0,why:"The side-by-side diagram shows what “grooves, bumps, and pockets” look like, which makes paragraph 4 easier to picture."},
+  {id:"s3",dok:2,type:"mc",stem:"What is the purpose of the “Did You Know?” sidebar?",opts:["To give an extra fact that shows another benefit of having more sea life on seawalls","To explain how seawalls are built","To tell readers where to buy oysters","To summarize the whole article"],ans:0,why:"The sidebar adds a bonus fact: oysters clean water. This shows that living seawalls can also help water quality."},
+  {id:"s4",dok:1,type:"match",stem:"Match each text feature to its purpose. Select one box in each row.",cols:["Defines a key term","Tells what a section is about","Explains what a picture shows","Adds a related bonus fact"],rows:["The bold word habitat","The heading “Early Results”","The caption under Figure 1","The “Did You Know?” sidebar"],ans:[0,1,2,3],why:"Each feature has its own job: bold words define, headings organize, captions explain pictures, and sidebars add extras."},
+  {id:"s5",dok:3,type:"mc",stem:"How does the section “The Problem with Flat Walls” contribute to the article as a whole?",opts:["It explains the problem first, so readers understand why living seawalls are needed.","It argues that all seawalls should be torn down.","It describes the results of the tests in Sydney and Miami.","It gives instructions for building a seawall at home."],ans:0,why:"The article is organized problem → solution → results. This section sets up the problem the rest of the article solves."},
+  {id:"s6",dok:2,type:"hot",stem:"Read paragraph 4. Select the sentence that explains how the panels help creatures survive at low tide.",sents:["To solve this problem, designers have created “living seawalls.”","Instead of a flat surface, a living seawall is covered with textured panels.","The panels have grooves, bumps, and small pockets that copy the shape of natural rocks and roots.","Some pockets are shaped like tiny bowls that hold seawater even at low tide, giving creatures a place to stay wet."],ans:[3],why:"Only this sentence mentions low tide and explains how the bowl-shaped pockets keep creatures wet."}
+ ]},
+/* ---------- R.2.2 ---------- */
+{code:"ELA.6.R.2.2",cat:2,short:"Central Idea",bench:"Analyze the central idea(s), implied or explicit, and its development throughout a text.",passage:"seawall",
+ learn:{
+  what:"The central idea is the most important point the WHOLE text makes about its topic. It may be stated directly (explicit) or you may have to figure it out (implied). Authors develop the central idea with supporting details across the text.",
+  asks:["Which statement best describes the central idea of the article?","Which TWO details best support the central idea?","How does the author develop the central idea?","Which sentence best states the central idea?"],
+  words:[["Central idea","main point","The most important idea the whole text is about."],["Supporting detail","proof","A fact, example, or explanation that backs up the central idea."],["Explicit","stated","Said directly in the text."],["Implied","figured out","Hinted at. You put the clues together."]],
+  steps:["Topic: What is the text mostly about? (one or two words)","Point: What is the author saying ABOUT the topic?","Test: Does it cover the WHOLE text, not just one paragraph?","Prove it: find details that support it."],
+  example:{text:"School gardens are popping up across the country. Students who grow vegetables are more likely to try eating them. Gardens also give science classes a place to study soil, insects, and weather. Some schools even donate extra produce to local families.",
+   q:"What is the central idea?",a:"School gardens benefit students and communities in several ways.",
+   think:"“Students try vegetables” is just one detail. So is “science classes study soil.” Every sentence shows a different benefit, so the central idea has to cover all of them: gardens help in many ways."},
+  check:{stem:"A central idea must cover…",opts:["the whole text","only the first paragraph","only the most interesting fact","only the title"],ans:0,hint:"Main idea = the big umbrella.",why:"A central idea is the “umbrella” that covers all of the important details in the text."}
+ },
+ items:[
+  {id:"m1",dok:2,type:"mc",stem:"Which statement best describes the central idea of the article?",opts:["Living seawalls are designed to protect the coast while also giving sea life places to live.","Oysters can clean large amounts of ocean water.","Seawalls should be replaced with mangrove forests.","Concrete is the strongest material for building walls."],ans:0,why:"Every section points to this idea: the problem (no habitat), the solution (textured panels), and the results (more sea life)."},
+  {id:"m2",dok:2,type:"ms",n:2,stem:"Which TWO details best support the central idea? Select TWO answers.",opts:["A smooth concrete wall offers almost none of these hiding places.","The textured panels generally attracted a greater variety of sea life than the flat walls nearby.","Some test projects took place in Sydney, Australia.","Seawalls are tall walls made of concrete.","Scientists are still studying living seawalls."],ans:[0,1],why:"One detail explains the problem and the other shows the solution working. The others are minor facts that do not show why living seawalls matter."},
+  {id:"m3",dok:3,type:"mc",stem:"How does the author develop the central idea throughout the article?",opts:["By describing a problem, explaining a solution, and then sharing early results","By telling events in the order they happened in one city","By comparing two scientists’ opinions","By listing the steps for building a living seawall"],ans:0,why:"The headings show the structure: The Problem with Flat Walls → A Wall with Wrinkles → Early Results."},
+  {id:"m4",dok:2,type:"hot",stem:"Read paragraph 7. Select the sentence that best states the central idea of the article.",sents:["Living seawalls cannot replace natural shorelines, and scientists are still studying how well they work over many years.","Still, the early results give scientists reason to be hopeful.","With a little creativity, a wall built to protect people can be both a shield and a home."],ans:[2],why:"“A shield and a home” sums up the whole article: protecting people AND giving sea life a habitat."},
+  {id:"m5",dok:3,type:"ebsr",a:{stem:"Part A: Which idea is implied in the last paragraph?",opts:["People can design what they build to work with nature instead of against it.","Living seawalls have completely solved the habitat problem.","Natural shorelines are no longer needed.","Scientists have stopped studying seawalls."],ans:0},
+   b:{stem:"Part B: Which phrase best supports the answer to Part A?",opts:["“both a shield and a home”","“cannot replace natural shorelines”","“still studying how well they work”","“reason to be hopeful”"],ans:0},
+   why:"A wall that is both a shield (for people) and a home (for sea life) shows people and nature working together. The author never states this directly. It is implied."}
+ ]},
+/* ---------- R.2.3 ---------- */
+{code:"ELA.6.R.2.3",cat:2,short:"Author’s Purpose: Two Accounts",bench:"Analyze authors’ purpose(s) in multiple accounts of the same event or topic.",passage:"cans",
+ learn:{
+  what:"Two authors can write about the same event for different purposes: to inform, to persuade, to entertain, or to share a personal experience. An author’s purpose shapes which details they include, which details they leave out, and the words and tone they use.",
+  asks:["What is the author’s purpose in Account 1?","How do the authors’ purposes differ?","Why does the author of Account 2 include ___?","Which detail appears in both accounts?"],
+  words:[["Account","a telling","A report or description of an event."],["Purpose","the why","Inform, persuade, entertain, or share an experience."],["Tone","attitude","The author’s feeling toward the subject: neutral, excited, emotional…"],["Perspective","viewpoint","How the author sees the event, based on their role and experience."]],
+  steps:["Name each author’s purpose. Look at who wrote it and why.","Compare details: what is in BOTH, and what is in only ONE?","Compare word choice: facts and numbers, or feelings and stories?","Explain how each purpose shaped the author’s choices."],
+  example:{text:"Account A: The Hawks won Saturday’s game 2–1. Rivera scored the winning goal in the 80th minute.\nAccount B: I’ve never heard our crowd roar like that! Come cheer with us next Saturday. You won’t regret it.",
+   q:"What is the purpose of Account B?",a:"To share excitement and persuade readers to come to the next game.",
+   think:"Account A sticks to facts like the score and time, so it informs. Account B uses feelings (“roar,” “never heard”) and asks readers to do something (“Come cheer”), so its purpose is to persuade."},
+  check:{stem:"Which purpose uses mostly facts, with few opinions or feelings?",opts:["To inform","To persuade","To entertain","To share feelings"],ans:0,hint:"Think of a news report.",why:"Informational writing focuses on facts such as who, what, when, where, and how many."}
+ },
+ items:[
+  {id:"a1",dok:2,type:"mc",stem:"What is the main purpose of Account 1?",opts:["To inform readers about the facts of the food drive","To persuade students to join next year’s drive","To entertain readers with a funny story","To describe the author’s feelings about the drive"],ans:0,why:"Account 1 is a newspaper report full of facts: dates, numbers, places, and names. It has no personal feelings."},
+  {id:"a2",dok:2,type:"mc",stem:"What is the main purpose of Account 2?",opts:["To share a personal experience and persuade students to take part next year","To report the official results of the homeroom contest","To explain how food pantries work","To complain about the rain"],ans:0,why:"Ava tells her own story with feelings, then asks listeners to “Sign up” and “Bring your rain boots.”"},
+  {id:"a3",dok:1,type:"match",stem:"Where does each detail appear? Select one box in each row.",cols:["Account 1 only","Account 2 only","Both accounts"],rows:["The drive collected 4,312 cans.","Ms. Delgado’s homeroom won a pizza party.","A little girl asked if the peaches were for her.","Rain affected the drive on Thursday.","The pantry will help about 300 families."],ans:[2,0,1,2,0],why:"The report includes contest results and pantry facts. Ava’s speech includes personal moments. Both mention the total and the rain."},
+  {id:"a4",dok:3,type:"mc",stem:"Why does the author of Account 2 include the story about the little girl in paragraph 3?",opts:["To help listeners feel the real impact of the drive, which supports her goal of getting students to join next year","To report how many families the pantry serves","To show that the drive was disorganized","To explain why the drive moved to the gym"],ans:0,why:"An emotional moment makes listeners care, and that supports Ava’s persuasive purpose. A news report would leave this out."},
+  {id:"a5",dok:3,type:"ebsr",a:{stem:"Part A: How do the two accounts treat the rain on Thursday differently?",opts:["Account 1 reports it as a delay, while Account 2 presents it as a moment that showed teamwork and determination.","Account 1 says the drive was canceled, while Account 2 says it continued.","Both accounts describe the rain as the worst part of the drive.","Account 2 leaves out the rain, while Account 1 describes it in detail."],ans:0},
+   b:{stem:"Part B: Which sentence from Account 2 best supports the answer to Part A?",opts:["Instead, thirty kids formed a line from the courtyard to the gym and passed every single box hand to hand, soaking wet and laughing the whole time.","When we started the Great Can Count, I was worried we would collect maybe a few hundred cans.","We collected 4,312 cans.","Bring your rain boots."],ans:0},
+   why:"Account 1 states facts (“delaying the count by two hours”). Account 2 turns the same event into an inspiring scene to persuade."},
+  {id:"a6",dok:2,type:"mc",stem:"Which sentence from Account 2 best shows that its tone is more emotional than Account 1’s?",opts:["Her mom’s eyes filled with tears. So did mine.","We collected 4,312 cans.","On Saturday, I helped unload the cans at the pantry.","Sign up at the Student Council table this Friday."],ans:0,why:"Tears and personal feelings create an emotional tone. Account 1 never shares feelings."}
+ ]},
+/* ---------- R.2.4 ---------- */
+{code:"ELA.6.R.2.4",cat:2,short:"Argument & Reasoning",bench:"Track the development of an argument, identifying the types of reasoning used.",passage:"recess",
+ learn:{
+  what:"An argument has a claim (what the author wants you to believe), reasons, and evidence. Tracking an argument means following how each part builds on the last. Authors use different types of reasoning: deductive reasoning moves from a general rule to a specific conclusion, and inductive reasoning moves from specific examples to a general conclusion. Strong arguments also answer a counterclaim.",
+  asks:["What is the author’s claim?","Which type of reasoning does the author use in paragraph ___?","How does paragraph ___ develop the argument?","How does the author respond to the counterclaim?"],
+  words:[["Claim","the position","What the author wants readers to believe or do."],["Deductive","rule → case","Starts with a general rule and applies it to a specific case."],["Inductive","examples → rule","Starts with specific examples and builds to a general conclusion."],["Counterclaim","other side","An opposing view. The author’s answer to it is the rebuttal."]],
+  steps:["Find the claim. It is usually at the beginning or end.","Label each paragraph’s job: reason, evidence, counterclaim, rebuttal, or call to action.","Reasoning check: starts with a rule for EVERYONE? Deductive. Several EXAMPLES that lead to a big idea? Inductive.","Explain how each part supports the claim."],
+  example:{text:"A: All plants need sunlight to grow. A tomato is a plant. So a tomato needs sunlight to grow.\nB: My dog loves peanut butter. My neighbor’s dog loves it. My cousin’s two dogs love it. Most dogs probably love peanut butter.",
+   q:"Which uses deductive reasoning, and which uses inductive?",a:"A is deductive (rule → specific). B is inductive (examples → general).",
+   think:"A starts with a rule about ALL plants and applies it to one plant, so it’s deductive. B starts with specific dogs and builds up to “most dogs,” so it’s inductive."},
+  check:{stem:"“Three students who joined the chess club raised their math grades, so chess club probably helps students in math.” Which type of reasoning is this?",opts:["Inductive","Deductive","Neither"],ans:0,hint:"Does it start with examples or with a rule?",why:"It begins with specific examples (three students) and builds to a general conclusion, so it is inductive."}
+ },
+ items:[
+  {id:"r1",dok:1,type:"mc",stem:"What is the author’s claim?",opts:["Our school should add a fifteen-minute recess break to the middle school schedule.","Students sit for almost seven hours every day.","Young people need at least 60 minutes of activity every day.","Recess takes away valuable class time."],ans:0,why:"This is the position the whole editorial argues for. The other choices are a reason, a fact, and a counterclaim."},
+  {id:"r2",dok:2,type:"mc",stem:"Which type of reasoning does the author use in paragraph 2?",opts:["Deductive, because it starts with a general rule about young people and applies it to students at this school","Inductive, because it lists examples from several schools","Deductive, because it lists examples from several schools","Inductive, because it starts with a general rule about young people"],ans:0,why:"Rule (all young people 6–17 need 60 minutes) → specific case (middle schoolers at this school) → conclusion. That is deductive."},
+  {id:"r3",dok:2,type:"mc",stem:"Which type of reasoning does the author use in paragraph 3?",opts:["Inductive, because it uses examples from three schools to reach a general conclusion","Deductive, because it starts with a rule and applies it to one school","Inductive, because it starts with a health rule","Deductive, because it answers a counterclaim"],ans:0,why:"Cedar Creek, Bayview, and Oak Hill → “School after school… recess helps students learn.” The reasoning goes from examples to a general idea, so it is inductive."},
+  {id:"r4",dok:2,type:"hot",stem:"Read paragraph 3. Select the sentence that states the general conclusion the author draws from the examples.",sents:["Schools that have tried recess have seen results.","When Cedar Creek Middle School added a break last year, teachers said students focused better after lunch.","At Bayview Middle, the number of students sent to the office dropped.","At Oak Hill Middle, students reported feeling less stressed.","School after school, the pattern is the same: recess helps students learn."],ans:[4],why:"In inductive reasoning, the general conclusion comes after the examples."},
+  {id:"r5",dok:2,type:"order",stem:"Track the argument. Put the parts in the order the author presents them.",items:["Claim: the school should add recess","Deductive reasoning: a health rule applied to students","Inductive reasoning: examples from three schools","Counterclaim and rebuttal about class time","Call to action for the principal and school board"],why:"Paragraphs 1–5 go: claim → deductive reason → inductive reason → counterclaim and rebuttal → call to action."},
+  {id:"r6",dok:3,type:"ebsr",a:{stem:"Part A: How does the author respond to the counterclaim in paragraph 4?",opts:["By using numbers to show recess takes little time and arguing that it actually protects learning","By agreeing that recess wastes time","By ignoring the counterclaim completely","By saying class time is not important"],ans:0},
+   b:{stem:"Part B: Which sentence best supports the answer to Part A?",opts:["However, fifteen minutes is only about four percent of a seven-hour day.","Some people argue that recess would take away valuable class time.","Our bodies, and our grades, will thank them.","At Bayview Middle, the number of students sent to the office dropped."],ans:0},
+   why:"“However” signals the rebuttal. The number (four percent) shows the cost is small."}
+ ]},
+/* ---------- R.3.1 ---------- */
+{code:"ELA.6.R.3.1",cat:3,short:"Figurative Language",bench:"Explain how figurative language contributes to tone and meaning in text(s).",passage:"storm",
+ learn:{
+  what:"Figurative language uses words in a way that goes beyond their literal (dictionary) meaning. Authors use it to create pictures in the reader’s mind, to show feelings, and to set the tone, which is the author’s attitude, such as tense, cheerful, or hopeful.",
+  asks:["What does the simile/metaphor in paragraph ___ suggest?","How does the figurative language contribute to the tone?","What does the phrase ___ mean?","How does the figurative language in paragraph ___ change the mood?"],
+  words:[["Simile","like / as","Compares two things using like or as."],["Metaphor","is","Says one thing IS another thing."],["Personification","human traits","Gives human actions or feelings to something that is not human."],["Hyperbole","exaggeration","A huge exaggeration for effect."],["Idiom","saying","A phrase whose meaning is different from its words."],["Tone","attitude","The author’s feeling toward the subject."]],
+  steps:["Name the type of figurative language.","Translate it into plain, literal words.","Ask: What feeling or picture does it create?","Connect that feeling to the tone or meaning of the whole text."],
+  example:{text:"After the fire drill, the classroom was a zoo.",
+   q:"What does the metaphor suggest, and what tone does it create?",a:"The class was loud and wild. The tone is humorous and chaotic.",
+   think:"It says the classroom IS a zoo with no “like,” so it is a metaphor. Literally: kids were noisy and out of control. Comparing kids to zoo animals is funny, so the tone is humorous."},
+  check:{stem:"“The alarm clock screamed at me until I got up.” What type of figurative language is this?",opts:["Personification","Simile","Hyperbole","Idiom"],ans:0,hint:"Can an alarm clock really scream like a person?",why:"Screaming is a human action given to an object, so it is personification."}
+ },
+ items:[
+  {id:"f1",dok:1,type:"match",stem:"Identify the type of figurative language in each phrase. Select one box in each row.",cols:["Simile","Metaphor","Personification","Hyperbole"],rows:["The storm arrived like a guest nobody had invited.","Her laughter was a lantern.","[Hope] sits with you at the kitchen table and refuses to leave.","I waited a hundred years for the lights to come back on."],ans:[0,1,2,3],why:"“like” = simile; “was a lantern” = metaphor; hope sitting and refusing = personification; a hundred years = hyperbole."},
+  {id:"f2",dok:2,type:"mc",stem:"What does the simile “The storm arrived like a guest nobody had invited” suggest about the storm?",opts:["The storm was unwelcome and forced its way into the family’s evening.","The storm was friendly and polite.","The family had planned a party.","The storm passed quickly."],ans:0,why:"An uninvited guest is someone you don’t want there. The comparison sets an uneasy tone at the start."},
+  {id:"f3",dok:2,type:"mc",stem:"What does the hyperbole in paragraph 2 suggest about the narrator?",opts:["The narrator felt that the time without power passed very slowly because of fear.","The narrator actually waited for a hundred years.","The narrator was bored and fell asleep.","The narrator was excited about the outage."],ans:0,why:"“A hundred years” exaggerates how long the wait felt. It shows how scared and uneasy the narrator was."},
+  {id:"f4",dok:2,type:"ebsr",a:{stem:"Part A: What does the metaphor “Her laughter was a lantern” mean?",opts:["Grandma’s laughter brought comfort and pushed away fear, the way a light pushes away darkness.","Grandma carried a lantern while she laughed.","Grandma’s laughter was too loud.","The candles made Grandma laugh."],ans:0},
+   b:{stem:"Part B: Which phrase from paragraph 4 helps the reader understand the metaphor?",opts:["“It pushed the darkness back into the corners of the room.”","“She lit three candles”","“an old deck of cards”","“a mess of branches”"],ans:0},
+   why:"The next sentence extends the metaphor: like a lantern, the laughter pushes the darkness (fear) away."},
+  {id:"f5",dok:3,type:"mc",stem:"How does the figurative language in paragraph 4 change the tone of the passage?",opts:["It shifts the tone from frightened to comforting, as Grandma’s laughter makes the storm seem less scary.","It shifts the tone from hopeful to angry.","It keeps the tone frightening by comparing the wind to a monster.","It makes the tone more serious by describing damage."],ans:0,why:"The wind changes from a “monster” into a “grumpy old dog.” The comparison makes the storm feel smaller and the tone warmer."},
+  {id:"f6",dok:3,type:"mc",stem:"How does the personification in the last paragraph contribute to the meaning of the passage?",opts:["Showing hope as someone who “sits with you” and “refuses to leave” suggests that hope stays loyal and steady during hard times.","It shows that the family had a guest at breakfast.","It suggests that hope is loud, like the storm.","It explains why the power came back on."],ans:0,why:"Giving hope human actions turns it into a loyal companion, which is the narrator’s big lesson from the night."}
+ ]},
+/* ---------- R.3.3 ---------- */
+{code:"ELA.6.R.3.3",cat:3,short:"Comparing Time Periods",bench:"Compare and contrast how authors from different time periods address the same or related topics.",passage:"hope",
+ learn:{
+  what:"Authors from different time periods may write about the same topic, such as hope, nature, or courage. Compare WHAT they say (their message) and HOW they say it (form, style, and word choice). The time period can shape the language, the details, and even the form a writer chooses.",
+  asks:["How do both authors present ___?","How is the poem’s treatment of ___ different from the narrative’s?","Which detail shows that the modern text was written recently?","How does each text’s time period influence its style?"],
+  words:[["Time period","when written","The era when a text was written, such as the 1800s or today."],["Treatment","how handled","The way an author approaches a topic: style, form, and details."],["Compare","same","Look for how the texts are alike."],["Contrast","different","Look for how the texts are different."]],
+  steps:["Find the shared topic.","State each author’s message about it.","Compare HOW they say it: poem or prose, figurative language, details.","Find time-period clues, such as old-fashioned words or modern technology, and explain their effect."],
+  example:{text:"1850s letter: “We traveled by wagon for three weeks to reach our new home in the West.”\nToday: “We flew six hours to Denver and video-called Grandma from the airport.”",
+   q:"What topic do both share, and what shows the time difference?",a:"Both are about moving to a new home. A wagon versus a plane and video calls shows the time difference.",
+   think:"Same topic: a journey to a new home. Different details: transportation and technology show each time period. That changes HOW the move is described."},
+  check:{stem:"When you compare two texts from different time periods, the FIRST thing to find is…",opts:["the topic they share","which one is longer","which author is more famous","which one rhymes"],ans:0,hint:"What are they both about?",why:"You need a shared topic before you can compare how each author handles it."}
+ },
+ items:[
+  {id:"h1",dok:2,type:"mc",stem:"How does Dickinson describe hope in the poem?",opts:["As a small bird that lives in the soul, keeps singing through storms, and never asks for anything","As a storm that makes people afraid","As a reward that people must earn","As a bird that flies away when times are hard"],ans:0,why:"Hope “perches in the soul,” sings in the “Gale,” and never “asked a crumb.” It gives without taking."},
+  {id:"h2",dok:2,type:"mc",stem:"How does the author of “The Night the Lights Went Out” show hope?",opts:["Through real events, like Grandma’s laughter and a neighbor’s help during a storm","Through a list of facts about hurricanes","Through a poem about a bird","Through a speech persuading people to buy flashlights"],ans:0,why:"The modern author shows hope through specific people and moments from one night."},
+  {id:"h3",dok:3,type:"mc",stem:"Which statement best compares how the two authors address the topic of hope?",opts:["Both show that hope stays strong during storms, but Dickinson describes hope as an idea using an extended metaphor, while the modern author tells a true personal story.","Both say that hope disappears during hard times.","Dickinson tells a personal story, while the modern author uses an extended metaphor.","Both authors describe hope as a person who visits at night."],ans:0,why:"SAME message: hope stays strong in storms. DIFFERENT treatment: Dickinson writes an abstract poem about a bird, and the modern writer tells a real event in prose."},
+  {id:"h4",dok:2,type:"match",stem:"Which text does each statement describe? Select one box in each row.",cols:["Poem only","Narrative only","Both"],rows:["Uses dashes and capitalized words like “Gale” and “Sea”","Mentions phones and texting","Uses storm imagery","Presents hope as something that stays with you in hard times","Is told in first person about one specific night"],ans:[0,1,2,2,1],why:"Dashes and capitals are part of Dickinson’s 1800s style. Phones place the narrative in today’s world. Both use storms and show hope staying with people."},
+  {id:"h5",dok:3,type:"ebsr",a:{stem:"Part A: How does each text’s time period affect the way its author writes about hope?",opts:["Dickinson’s 1800s poem uses formal poetic style and images from nature, while the modern narrative includes everyday modern details like phones and a power outage.","Both texts are filled with modern technology.","The modern narrative uses old-fashioned words like “abash.”","Dickinson’s poem describes electricity going out."],ans:0},
+   b:{stem:"Part B: Which detail from the modern narrative best supports the answer to Part A?",opts:["Three phones glowed on the table as we texted our cousins that we were safe.","Grandma did not panic.","the sun came up anyway, bright and steady","storms are loud, but hope can be quiet"],ans:0},
+   why:"Phones and texting could only appear in a recent text. They show how the modern time period shapes the details."},
+  {id:"h6",dok:2,type:"mc",stem:"In line 7 of the poem, the word “abash” most likely means…",opts:["embarrass or silence","feed","help fly","warm"],ans:0,why:"It would take a very “sore” (severe) storm to abash the bird, meaning to quiet or shame it into stopping its song."}
+ ]},
+/* ---------- R.3.4 ---------- */
+{code:"ELA.6.R.3.4",cat:3,short:"Rhetorical Appeals",bench:"Identify rhetorical appeals in a text.",passage:"speech",
+ learn:{
+  what:"Rhetorical appeals are the ways writers and speakers persuade an audience. Ethos appeals to credibility (“trust me” or “an expert agrees”). Pathos appeals to emotion (it makes you feel something). Logos appeals to logic (facts, numbers, and reasons).",
+  asks:["Which appeal does the speaker use in paragraph ___?","Which sentence appeals to emotion (pathos)?","Select TWO sentences that appeal to logic (logos).","Why does the speaker mention ___?"],
+  words:[["Ethos","trust","Builds credibility through experience, expertise, or good character."],["Pathos","feelings","Stirs emotions like sympathy, fear, hope, or pride."],["Logos","logic","Uses facts, statistics, and clear reasons."],["Persuade","convince","To get someone to believe or do something."]],
+  steps:["Read the sentence carefully.","Ask: Does it make me TRUST the speaker or an expert? That’s ethos.","Ask: Does it make me FEEL something? That’s pathos.","Ask: Does it give FACTS, numbers, or reasons? That’s logos."],
+  example:{text:"“As a nurse for twenty years, I have seen how bike helmets save lives.”",
+   q:"Which appeal is this?",a:"Ethos. The speaker’s twenty years as a nurse build trust.",
+   think:"The sentence doesn’t give numbers (logos) or tell a sad story (pathos). It shows WHY we should believe the speaker: her experience as a nurse."},
+  check:{stem:"“Every year, more than 3,000 pounds of trash are collected from our park.” Which appeal is this?",opts:["Logos","Ethos","Pathos"],ans:0,hint:"Is it a number, a feeling, or a credential?",why:"A statistic appeals to logic, so it is logos."}
+ },
+ items:[
+  {id:"e1",dok:1,type:"mc",stem:"Which appeal does Kayla mainly use in paragraph 1?",opts:["Ethos: she builds trust by describing her two years of volunteer experience","Pathos: she tells a sad story about an animal","Logos: she explains the cost of the cleanup","Pathos: she asks the audience to imagine a clean beach"],ans:0,why:"Her experience (two years and 200 pounds of trash) shows she knows what she’s talking about."},
+  {id:"e2",dok:2,type:"mc",stem:"How does paragraph 2 appeal to the audience?",opts:["It uses pathos by describing a hurt baby turtle so listeners feel sympathy.","It uses logos by giving statistics about plastic.","It uses ethos by naming an expert.","It uses logos by explaining that the cleanup is free."],ans:0,why:"Words like “tiny,” “bleeding,” and “helpless” are meant to make listeners feel sad and want to help."},
+  {id:"e3",dok:2,type:"ms",n:2,stem:"Which TWO sentences appeal to logos? Select TWO answers.",opts:["According to our county’s beach survey, volunteers removed 3,800 pieces of plastic from Sunset Beach last year alone.","The city provides gloves, bags, and grabbers for free.","Its tiny flippers were scraped and bleeding as it struggled toward the water.","Our marine science teacher, Dr. Fields, who has studied ocean pollution for fifteen years, has already agreed to lead the first cleanup.","Imagine bringing your little brother or sister to a beach where the sand is clean and the turtles are safe."],ans:[0,1],why:"A statistic and a practical cost fact are logical reasons. The others are pathos (the turtle, “imagine”) and ethos (the expert)."},
+  {id:"e4",dok:2,type:"match",stem:"Identify the rhetorical appeal in each sentence. Select one box in each row.",cols:["Ethos","Pathos","Logos"],rows:["Dr. Fields has studied ocean pollution for fifteen years.","I will never forget how helpless it looked.","Plastic can take hundreds of years to break down.","Imagine bringing your little brother or sister to a beach where the sand is clean."],ans:[0,1,2,1],why:"Expert = ethos. Feelings and imagining = pathos. A scientific fact = logos."},
+  {id:"e5",dok:3,type:"ebsr",a:{stem:"Part A: Why does Kayla mention Dr. Fields in paragraph 5?",opts:["To add credibility by showing that an expert supports her plan","To make listeners feel sorry for Dr. Fields","To give statistics about pollution","To show that the cleanup will be expensive"],ans:0},
+   b:{stem:"Part B: Which phrase best shows why the audience should trust Dr. Fields?",opts:["“who has studied ocean pollution for fifteen years”","“has already agreed”","“the first cleanup”","“one Saturday cleanup each month”"],ans:0},
+   why:"Fifteen years of study makes Dr. Fields an expert. That is an ethos appeal."},
+  {id:"e6",dok:2,type:"hot",stem:"Read paragraph 6. Select the sentence that appeals most strongly to the audience’s emotions.",sents:["Imagine bringing your little brother or sister to a beach where the sand is clean and the turtles are safe.","We can make that beach real.","Please vote yes."],ans:[0],why:"Picturing a younger sibling on a safe, clean beach is meant to stir caring feelings, which is pathos."}
+ ]},
+/* ---------- V.1.2 ---------- */
+{code:"ELA.6.V.1.2",cat:3,short:"Greek & Latin Roots",bench:"Apply knowledge of Greek and Latin roots and affixes to determine meanings of words and phrases in grade-level content.",passage:"museum",
+ learn:{
+  what:"Many English words are built from Greek and Latin roots and affixes (prefixes and suffixes). If you know what the parts mean, you can figure out unfamiliar words. Always check your meaning against the sentence.",
+  asks:["The root ___ means ___. What does ___ mean in paragraph ___?","Which TWO words share a root that means ___?","Which root helps the reader understand ___?"],
+  words:[["chron","time","chronological, chronicle"],["tele","far","telescope, telephone"],["scope / spect","look, see","microscope, spectator"],["bio","life","biology, biography"],["graph / scrib","write","autograph, inscription"],["geo","earth","geology, geography"],["port","carry","portable, transport"],["aud","hear","audible, audience"],["dict","say","predict, dictionary"],["struct","build","construct, structure"],["auto","self","autobiography, automatic"],["-logy","study of","geology, biology"]],
+  steps:["Break the word into parts (prefix, root, suffix).","Define each part.","Put the meanings together.","Check: does your meaning make sense in the sentence?"],
+  example:{text:"geology = geo + logy",q:"What does geology mean?",a:"The study of the earth.",think:"geo = earth, -logy = study of. Put together, that’s the study of the earth. It fits the sentence because the Earth Room shows layers of rock."},
+  check:{stem:"trans- means “across” and port means “carry.” What does transport mean?",opts:["to carry something from one place to another","to look at something far away","to write something down","to hear something clearly"],ans:0,hint:"Put “across” + “carry” together.",why:"Transport means to carry across, or from one place to another."}
+ },
+ items:[
+  {id:"w1",dok:1,type:"mc",stem:"The root chron means “time.” What does chronological mean in paragraph 1?",opts:["arranged in order of time","very old and broken","made by famous inventors","shown in a glass case"],ans:0,why:"The display goes “starting with the oldest and ending with the newest.” That is time order."},
+  {id:"w2",dok:1,type:"match",stem:"Match each root to its meaning. Select one box in each row.",cols:["far","earth","hear","carry"],rows:["tele (telescope)","geo (geology)","aud (audible)","port (portable)"],ans:[0,1,2,3],why:"tele = far, geo = earth, aud = hear, port = carry."},
+  {id:"w3",dok:2,type:"mc",stem:"Use the parts auto (self), bio (life), and graph (write). What is an autobiography?",opts:["the story of a person’s life written by that person","a book about cars","a drawing of the solar system","a list of space facts"],ans:0,why:"self + life + write = a life story written by oneself. The astronaut’s own handwriting is a context clue."},
+  {id:"w4",dok:2,type:"ms",n:2,stem:"Which TWO words from the passage contain a root that means “look” or “see”? Select TWO answers.",opts:["telescope","spectators","portable","inscription","predict"],ans:[0,1],why:"scope (telescope) and spect (spectators) both mean look or see."},
+  {id:"w5",dok:2,type:"ebsr",a:{stem:"Part A: What does inscription mean in paragraph 5?",opts:["words carved or written on a surface","a type of bridge made of straws","a loud announcement","a museum ticket"],ans:0},
+   b:{stem:"Part B: Which word part best helps the reader figure out the meaning of inscription?",opts:["scrib/scrip, meaning “write”","in-, meaning “not”","port, meaning “carry”","spect, meaning “see”"],ans:0},
+   why:"scrip = write. An inscription is writing carved “in” stone. Here, in- means “in or on,” not “not.”"},
+  {id:"w6",dok:2,type:"drop",stem:"Choose the words that correctly complete the sentence.",text:"The word audible comes from the Latin root {0}, which means {1}, so “barely audible” means the music could barely be heard.",menus:[["aud","aqua","auto"],["hear","water","self"]],ans:[0,0],why:"aud = hear (like audience and audio)."},
+  {id:"w7",dok:2,type:"mc",stem:"The prefix pre- means “before,” and the root dict means “say.” What does predict mean in paragraph 3?",opts:["to say what will happen before it happens","to read rocks carefully","to build a strong wall","to say something again"],ans:0,why:"before + say = to say beforehand, as scientists do when they forecast earthquakes."}
+ ]},
+/* ---------- V.1.3 ---------- */
+{code:"ELA.6.V.1.3",cat:3,short:"Context Clues & Connotation",bench:"Apply knowledge of context clues, figurative language, word relationships, reference materials, and/or background knowledge to determine the connotative and denotative meaning of words and phrases.",passage:"newkid",
+ learn:{
+  what:"Context clues are hints in the nearby words and sentences that help you figure out a word’s meaning. Clue types include definition, synonym, antonym, example, and inference. Every word has a denotation (its dictionary meaning) and may have a connotation (the feeling it carries: positive, negative, or neutral).",
+  asks:["What does ___ mean as it is used in paragraph ___?","Which words help the reader understand the meaning of ___?","The author uses the word ___ to suggest that…","What does the phrase ___ mean?"],
+  words:[["Definition clue","tells you","The meaning is given right in the sentence, often after a comma."],["Antonym clue","opposite","A word with the opposite meaning, often after “not” or “unlike.”"],["Example clue","shows you","Examples that show what the word means."],["Denotation","dictionary","The exact, literal meaning of a word."],["Connotation","feeling","The positive or negative feeling a word carries."]],
+  steps:["Reread the sentence and the sentences around it.","Find the clue and name its type.","Replace the word with your guess. Does the sentence still make sense?","For connotation, ask: Is the feeling positive, negative, or neutral? Why did the author choose THIS word?"],
+  example:{text:"The house was cluttered; toys, papers, and shoes covered every surface.",q:"What does cluttered mean?",a:"Messy and filled with things.",think:"After the semicolon come examples: toys, papers, and shoes covering everything. That is an example clue, and it shows the house was messy and crowded with stuff."},
+  check:{stem:"Which word has the most NEGATIVE connotation?",opts:["nosy","curious","interested"],ans:0,hint:"Which one would you NOT want someone to call you?",why:"All three mean wanting to know something, but “nosy” suggests poking into other people’s business, which is negative."}
+ },
+ items:[
+  {id:"x1",dok:1,type:"mc",stem:"What does apprehensive mean as it is used in paragraph 1?",opts:["nervous and worried","excited and happy","bored and sleepy","angry and upset"],ans:0,why:"His hands shook, and he “worried that no one would talk to him.” Those are clues that he felt nervous."},
+  {id:"x2",dok:2,type:"ebsr",a:{stem:"Part A: What does aloof mean in paragraph 2?",opts:["distant and unfriendly","very tall","funny and loud","new to the school"],ans:0},
+   b:{stem:"Part B: Which words from paragraph 2 best help the reader understand aloof?",opts:["“distant and cold”","“a tall girl”","“She’s actually nice”","“waved him over”"],ans:0},
+   why:"A definition clue follows the word right after the comma: “aloof, distant and cold.”"},
+  {id:"x3",dok:2,type:"drop",stem:"Choose the words that correctly complete the sentences.",text:"In paragraph 3, the word stingy means {0}. The reader can tell because stingy is used as the {1} of “generous.”",menus:[["unwilling to share","very kind","always late"],["opposite","synonym","example"]],ans:[0,0],why:"“Generous… not stingy” is an antonym clue. The old partner “never shared anything.”"},
+  {id:"x4",dok:2,type:"mc",stem:"Based on the examples in paragraph 4, what does tenacious mean?",opts:["refusing to give up","easily scared","very small","growing quickly"],ans:0,why:"A weed that keeps growing through cracks and a dog that won’t let go are both examples of refusing to give up."},
+  {id:"x5",dok:2,type:"mc",stem:"The author writes that the girl “smirked” instead of “smiled.” What does this word choice suggest?",opts:["Her smile seemed mocking or unfriendly.","She was very happy to meet Omar.","She was about to laugh at a joke.","She was trying to hide that she was sad."],ans:0,why:"Smirk has a negative connotation: a smug or mocking smile. That is why Omar’s “face burn[ed].”"},
+  {id:"x6",dok:2,type:"mc",stem:"What does the phrase “made a mountain out of a molehill” mean in paragraph 5?",opts:["treated a small problem as if it were a huge one","climbed a tall hill on the way home","built something for science class","forgot what he was worried about"],ans:0,why:"This idiom means exaggerating a small problem. Omar’s worries turned out to be small."},
+  {id:"x7",dok:2,type:"ms",n:2,stem:"Which TWO words have a more POSITIVE connotation than “stingy”? Select TWO answers.",opts:["thrifty","economical","cheap","miserly","greedy"],ans:[0,1],why:"Thrifty and economical suggest being smart with money. The others sound selfish."}
+ ]}
+];
+
+</script>
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function el(html){const t=document.createElement("template");t.innerHTML=html.trim();return t.content.firstElementChild}
+const L="ABCDEFG";
+const CATC={1:"var(--coral)",2:"var(--blue)",3:"var(--violet)"};
+const MODC=["var(--coral)","var(--teal)","var(--violet)","var(--blue)","var(--teal)","var(--green)","var(--violet)","var(--coral)","var(--green)","var(--blue)","var(--teal)","var(--violet)"];
+MODS.forEach((m,i)=>{m.idx=i;m.color=MODC[i];m.slug=m.code.replace(/^ELA\.6\./,"").replace(/\./g,"-")});
+
+/* ---------- deterministic shuffles ---------- */
+function rng(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%10000)/10000}}
+function perm(n,key){const r=rng(key),a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function shufMC(q,key){const p=perm(q.opts.length,key);q.opts=p.map(i=>q.opts[i]);q.ans=Array.isArray(q.ans)?q.ans.map(a=>p.indexOf(a)).sort():p.indexOf(q.ans)}
+MODS.forEach(m=>{shufMC(m.learn.check,m.code+"qc");m.items.forEach(q=>{
+  if(q.type==="mc"||q.type==="ms")shufMC(q,q.id);
+  if(q.type==="ebsr"){shufMC(q.a,q.id+"a");shufMC(q.b,q.id+"b")}
+  if(q.type==="order"){let p=perm(q.items.length,q.id),k=0;while(p.every((v,i)=>v===i)&&k<5)p=perm(q.items.length,q.id+(++k));q.start=p}
+})});
+function maxPts(q){return q.type==="ebsr"?2:1}
+
+/* ---------- state ---------- */
+const KEY="ll-fast-coach-g6-v1";
+let S={name:"",mods:{},view:{v:"home"}};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function M(code){return S.mods[code]||(S.mods[code]={learned:false,ans:{},submitted:false})}
+
+/* ---------- speech ---------- */
+let voiceMode="female",flip=false,voices=[];
+const FEM=/female|samantha|zira|aria|jenny|ava|allison|susan|victoria|michelle|emma|joanna|salli|kimberly|google us english/i;
+const MAL=/\bmale\b|alex|david|guy|fred|aaron|\btom\b|mark|davis|tony|evan|nathan|matthew|joey|justin|ryan|christopher|eric|roger|steffan/i;
+function loadV(){try{voices=speechSynthesis.getVoices().filter(v=>/^en[-_]US/i.test(v.lang))}catch(e){voices=[]}}
+if("speechSynthesis" in window){loadV();speechSynthesis.onvoiceschanged=loadV;setTimeout(loadV,600);setTimeout(loadV,2000)}
+function pick(g){if(!voices.length)return null;const pool=g==="male"?voices.filter(v=>MAL.test(v.name)&&!/female/i.test(v.name)):voices.filter(v=>FEM.test(v.name)&&!/\bmale\b/i.test(v.name));
+  return pool.find(v=>/google/i.test(v.name))||pool.find(v=>/natural|neural|enhanced|premium/i.test(v.name))||pool[0]||voices[0]}
+function clean(t){const d=document.createElement("div");d.innerHTML=t;return d.textContent.replace(/ELA\.[A-Z0-9.]+/g,"").replace(/DOK\s*\d/g,"").replace(/[“”]/g,'"').replace(/___/g,"blank").replace(/\s+/g," ").trim()}
+let sayRun=0,sayQ=[],sayU=null;
+function localV(g){const loc=voices.filter(v=>v.localService&&!/google/i.test(v.name));if(!loc.length)return null;
+  const pool=g==="male"?loc.filter(v=>MAL.test(v.name)&&!/female/i.test(v.name)):loc.filter(v=>FEM.test(v.name)&&!/\bmale\b/i.test(v.name));return pool[0]||loc[0]}
+function chunkT(t){const parts=t.match(/[^.!?]+[.!?"')]*\s*/g)||[t];const out=[];let cur="";parts.forEach(p=>{if((cur+p).length>200&&cur){out.push(cur);cur=p}else cur+=p});if(cur.trim())out.push(cur);return out}
+function say(t){if(!("speechSynthesis" in window))return;
+  let busy=false;try{busy=speechSynthesis.speaking||speechSynthesis.pending}catch(e){}
+  hush();if(!voices.length)loadV();
+  try{speechSynthesis.resume()}catch(e){}
+  let g=voiceMode;if(g==="mix"){flip=!flip;g=flip?"female":"male"}
+  const run=sayRun;sayQ=chunkT(clean(t));const v=pick(g),fb=localV(g);
+  if(busy)setTimeout(()=>{if(run===sayRun)sayNext(v,fb,run)},150);/* Chrome drops speech started right after stopping other speech */
+  else sayNext(v,fb,run)/* start right inside the tap (required on iPad) */}
+function sayNext(v,fb,run){if(run!==sayRun||!sayQ.length)return;sayOne(sayQ.shift(),v,fb,run)}
+function sayOne(text,v,fb,run){const u=new SpeechSynthesisUtterance(text);sayU=u;/* keep a reference so Chrome doesn't lose it */
+  if(v){u.voice=v;u.lang=v.lang}else u.lang="en-US";u.rate=.95;u.volume=1;let started=false;
+  const useFb=()=>{if(fb&&v!==fb){try{speechSynthesis.cancel()}catch(e){}sayOne(text,fb,fb,run);return true}return false};
+  u.onstart=()=>{started=true};
+  u.onend=()=>{if(run===sayRun)sayNext(v,fb,run)};
+  u.onerror=e=>{if(run!==sayRun)return;if(e&&(e.error==="interrupted"||e.error==="canceled"))return;useFb()};/* Google voice needs internet; fall back to built-in voice */
+  try{speechSynthesis.speak(u)}catch(e){return}
+  setTimeout(()=>{if(run===sayRun&&sayU===u&&!started&&!speechSynthesis.speaking)useFb()},2500)}
+function hush(){sayRun++;sayQ=[];sayU=null;try{speechSynthesis.cancel()}catch(e){}}
+window.addEventListener("pagehide",hush);
+document.querySelectorAll("[data-voice]").forEach(b=>b.addEventListener("click",()=>{voiceMode=b.dataset.voice;document.querySelectorAll("[data-voice]").forEach(x=>x.setAttribute("aria-pressed",x===b))}));
+$("#stopTalk").addEventListener("click",hush);
+const SPK='<svg width="14" height="14" aria-hidden="true"><use href="#spk"/></svg>';
+function lb(fn,label){const b=el('<button type="button" class="listen">'+SPK+(label||"Listen")+'</button>');b.addEventListener("click",e=>{e.stopPropagation();say(typeof fn==="function"?fn():fn)});return b}
+
+/* ---------- scoring ---------- */
+const same=(a,b)=>{a=[...(a||[])].map(Number).sort();b=[...b].map(Number).sort();return a.length===b.length&&a.every((x,i)=>x===b[i])};
+function score(q,v){if(v==null)return 0;switch(q.type){
+  case"mc":return v===q.ans?1:0;
+  case"ms":case"hot":return same(v,q.ans)?1:0;
+  case"ebsr":return (v.a===q.a.ans?1:0)+(Array.isArray(q.b.ans)?(same(v.b,q.b.ans)?1:0):(v.b===q.b.ans?1:0));
+  case"match":case"drop":return q.ans.every((a,i)=>v[i]===a)?1:0;
+  case"order":return v.every((x,i)=>x===i)?1:0}return 0}
+function answered(q,v){if(v==null)return false;switch(q.type){
+  case"mc":return typeof v==="number";case"ms":return v.length===q.n;case"hot":return v.length===(q.ans.length);
+  case"ebsr":return typeof v.a==="number"&&typeof v.b==="number";
+  case"match":return q.rows.every((_,i)=>typeof v[i]==="number");case"drop":return q.menus.every((_,i)=>typeof v[i]==="number"&&v[i]>=0);
+  case"order":return Array.isArray(v)}return false}
+function modScore(m){const st=S.mods[m.code];if(!st||!st.submitted)return null;let p=0,x=0;const dok={1:[0,0],2:[0,0],3:[0,0]};
+  m.items.forEach(q=>{const s=score(q,st.ans[q.id]),mx=maxPts(q);p+=s;x+=mx;dok[q.dok][0]+=s;dok[q.dok][1]+=mx});return{p,x,pct:Math.round(p/x*100),dok}}
+function level(pct){if(pct==null)return["Not started","",""];if(pct>=80)return["Mastered","m","Great work! You unlocked this skill."];if(pct>=60)return["Getting close","a","Almost there. Review the explanations for the ones you missed."];return["Keep practicing","k","Go back to Learn and try the steps again with your teacher."]}
+
+/* ---------- passage ---------- */
+function splitS(html){return html.replace(/([.!?][”’]?)\s+(?=[“A-Z<])/g,"$1\u0000").split("\u0000").map(s=>'<span class="sent">'+s+'</span>').join(" ")}
+const FIG={seawall:'<svg viewBox="0 0 420 170" role="img" aria-label="Diagram comparing a flat panel and a textured living seawall panel"><rect x="0" y="0" width="420" height="170" fill="var(--paper)"/><rect x="0" y="110" width="420" height="60" fill="color-mix(in srgb,var(--blue) 25%,var(--paper))"/><text x="8" y="128" font-size="11" fill="var(--ink)" font-family="Atkinson Hyperlegible,sans-serif">low tide</text>'+
+ '<rect x="70" y="20" width="60" height="150" fill="color-mix(in srgb,var(--muted) 45%,var(--paper))" stroke="var(--ink)" stroke-width="2"/><text x="100" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)" font-family="Atkinson Hyperlegible,sans-serif">Flat panel</text>'+
+ '<path d="M270 20 h40 q14 10 0 20 q16 10 0 22 h18 v10 h-18 q16 10 0 22 q14 10 0 20 h18 v10 h-18 q16 12 0 24 v22 h-58 z" fill="color-mix(in srgb,var(--muted) 45%,var(--paper))" stroke="var(--ink)" stroke-width="2"/>'+
+ '<path d="M328 72 q14 0 14 -10 h-14 z M328 116 q14 0 14 -10 h-14 z" fill="color-mix(in srgb,var(--blue) 45%,var(--paper))" stroke="var(--ink)" stroke-width="1.5"/>'+
+ '<ellipse cx="318" cy="38" rx="7" ry="4" fill="var(--gold)" stroke="var(--ink)"/><ellipse cx="320" cy="88" rx="7" ry="4" fill="var(--gold)" stroke="var(--ink)"/><circle cx="314" cy="130" r="4" fill="var(--coral)" stroke="var(--ink)"/><circle cx="322" cy="56" r="3.5" fill="var(--green)" stroke="var(--ink)"/>'+
+ '<text x="300" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)" font-family="Atkinson Hyperlegible,sans-serif">Living seawall panel</text>'+
+ '<text x="352" y="70" font-size="10" fill="var(--ink)" font-family="Atkinson Hyperlegible,sans-serif">water pocket</text><text x="330" y="40" font-size="10" fill="var(--ink)" font-family="Atkinson Hyperlegible,sans-serif">oyster</text></svg>'};
+function textBlocks(t){let n=0,h='<h3>'+esc(t.title)+'</h3><div class="by">'+esc(t.by)+'</div>';
+  t.blocks.forEach(b=>{
+    if(b.p){n++;h+='<div class="para"><button type="button" class="pn" title="Listen to paragraph '+n+'" aria-label="Paragraph '+n+', tap to listen">'+n+'</button><div class="tx">'+splitS(b.p)+'</div></div>'}
+    else if(b.h)h+='<h4>'+esc(b.h)+'</h4>';
+    else if(b.spk)h+='<div class="spk">'+esc(b.spk)+'</div>';
+    else if(b.side)h+='<div class="side">'+b.side+'</div>';
+    else if(b.fig)h+='<div class="fig">'+FIG[b.fig]+'<div class="cap">'+b.cap+'</div></div>';
+    else if(b.poem){const s=b.start||1;h+='<div class="stanza">'+b.poem.map((l,i)=>'<div class="pline"><span class="ln">'+(s+i)+'</span><span class="sent">'+esc(l)+'</span></div>').join("")+'</div>'}
+  });return h}
+function renderPassage(key){const P=PASSAGES[key];const card=el('<div class="card passage"></div>');
+  const bar=el('<div class="pbar"><span class="lbl">'+esc(P.label)+'</span><button type="button" class="pillbtn toggle" aria-pressed="false">Highlighter</button></div>');
+  const body=el('<div class="ptext"></div>');
+  P.texts.forEach((t,i)=>{const tt=t.ref?PASSAGES[t.ref].texts[0]:t;if(i)body.insertAdjacentHTML("beforeend",'<div class="divider"></div>');body.insertAdjacentHTML("beforeend",textBlocks(tt))});
+  bar.appendChild(lb(()=>body.textContent.replace(/\b\d+\b(?=\s)/g,""),"Listen to all"));
+  bar.querySelector(".toggle").addEventListener("click",e=>{const on=e.currentTarget.getAttribute("aria-pressed")!=="true";e.currentTarget.setAttribute("aria-pressed",on);body.classList.toggle("hlmode",on)});
+  body.addEventListener("click",e=>{const pn=e.target.closest(".pn");if(pn){say(pn.nextElementSibling.textContent);return}
+    if(body.classList.contains("hlmode")){const s=e.target.closest(".sent");if(s)s.classList.toggle("hl")}});
+  card.appendChild(bar);card.appendChild(body);return card}
+
+/* ---------- item widgets ---------- */
+function optList(q,get,set,multi,locked){const box=el('<div class="opts" role="'+(multi?"group":"radiogroup")+'"></div>');
+  q.opts.forEach((o,i)=>{const b=el('<button type="button" class="opt'+(multi?" box":"")+'"><span class="lt">'+L[i]+'</span><span>'+esc(o)+'</span></button>');
+    b.addEventListener("click",()=>{if(locked())return;let v=get();if(multi){v=v?[...v]:[];v.includes(i)?v=v.filter(x=>x!==i):(v.length<(q.n||9)?v.push(i):(v.shift(),v.push(i)));set(v.sort())}else set(i);paint()});box.appendChild(b)});
+  function paint(){const v=get();[...box.children].forEach((b,i)=>b.setAttribute("aria-pressed",multi?!!(v&&v.includes(i)):v===i))}
+  paint();box.paint=paint;
+  box.reveal=(ans)=>{const v=get();const A=Array.isArray(ans)?ans:[ans];[...box.children].forEach((b,i)=>{b.disabled=true;const chosen=multi?!!(v&&v.includes(i)):v===i;if(A.includes(i))b.classList.add("ok");else if(chosen)b.classList.add("bad")})};
+  return box}
+
+function buildItem(q,num,ctx){
+  /* ctx: {get(),set(v),locked(),onChange()} */
+  const card=el('<div class="item" id="it-'+q.id+'"></div>');
+  const typeName={mc:"Multiple choice",ms:"Multiselect",ebsr:"Part A / Part B",hot:"Hot text",match:"Matching table",drop:"Drop-down",order:"Put in order"}[q.type];
+  const top=el('<div class="itop"><span class="qnum">'+(num?"Question "+num:"")+'</span><span class="dok dok'+q.dok+'">DOK '+q.dok+'</span><span class="typ">'+typeName+'</span></div>');
+  const speak=()=>{if(q.type==="ebsr")return q.a.stem+". "+q.a.opts.map((o,i)=>L[i]+". "+o).join(". ")+". "+q.b.stem+". "+q.b.opts.map((o,i)=>L[i]+". "+o).join(". ");
+    if(q.opts)return q.stem+". "+q.opts.map((o,i)=>L[i]+". "+o).join(". ");if(q.sents)return q.stem+". "+q.sents.join(" ");if(q.rows)return q.stem+" "+q.rows.join(". ");if(q.items)return q.stem+" "+q.items.join(". ");if(q.text)return q.stem+" "+q.text.replace(/\{\d\}/g,"blank");return q.stem};
+  top.appendChild(lb(speak));card.appendChild(top);
+  const set=v=>{ctx.set(v);ctx.onChange()};const get=ctx.get,locked=ctx.locked;let reveal=()=>{};
+  if(q.type==="mc"||q.type==="ms"){card.appendChild(el('<p class="stem">'+esc(q.stem)+'</p>'));const b=optList(q,get,set,q.type==="ms",locked);card.appendChild(b);reveal=()=>b.reveal(q.ans)}
+  else if(q.type==="ebsr"){card.appendChild(el('<p class="stem">'+esc(q.a.stem)+'</p>'));
+    const ga=()=>(get()||{}).a,gb=()=>(get()||{}).b;
+    const A=optList(q.a,ga,v=>set(Object.assign({},get()||{},{a:v})),false,locked);card.appendChild(A);
+    const pb=el('<div class="part"></div>');pb.appendChild(el('<p class="stem">'+esc(q.b.stem)+'</p>'));
+    const B=optList(q.b,gb,v=>set(Object.assign({},get()||{},{b:v})),Array.isArray(q.b.ans),locked);pb.appendChild(B);card.appendChild(pb);
+    reveal=()=>{A.reveal(q.a.ans);B.reveal(q.b.ans)}}
+  else if(q.type==="hot"){card.appendChild(el('<p class="stem">'+esc(q.stem)+'</p>'));const box=el('<div class="hotbox"></div>');
+    q.sents.forEach((s,i)=>{const b=el('<button type="button" class="hs" aria-pressed="false">'+esc(s)+'</button>');b.addEventListener("click",()=>{if(locked())return;let v=[...(get()||[])];const need=q.ans.length;
+      if(v.includes(i))v=v.filter(x=>x!==i);else{v.push(i);if(v.length>need)v.shift()}set(v);paint()});box.appendChild(b);box.appendChild(document.createTextNode(" "))});
+    const paint=()=>{const v=get()||[];box.querySelectorAll(".hs").forEach((b,i)=>b.setAttribute("aria-pressed",v.includes(i)))};paint();
+    card.appendChild(box);card.appendChild(el('<div class="typ" style="margin-top:6px">Tap a sentence to select it.</div>'));
+    reveal=()=>{const v=get()||[];box.querySelectorAll(".hs").forEach((b,i)=>{b.disabled=true;b.setAttribute("aria-pressed","false");if(q.ans.includes(i))b.classList.add("ok");else if(v.includes(i))b.classList.add("bad")})}}
+  else if(q.type==="match"){card.appendChild(el('<p class="stem">'+esc(q.stem)+'</p>'));
+    let h='<div class="mtwrap"><table class="mt"><thead><tr><th></th>'+q.cols.map(c=>'<th>'+esc(c)+'</th>').join("")+'</tr></thead><tbody>';
+    q.rows.forEach((r,ri)=>{h+='<tr><td>'+esc(r)+'</td>'+q.cols.map((c,ci)=>'<td><input type="radio" name="'+q.id+'-r'+ri+'" id="'+q.id+'-'+ri+'-'+ci+'" data-r="'+ri+'" data-c="'+ci+'" aria-label="'+esc(r)+': '+esc(c)+'"></td>').join("")+'</tr>'});
+    h+='</tbody></table></div>';const t=el(h);card.appendChild(t);
+    const v0=get()||[];t.querySelectorAll("input").forEach(inp=>{const ri=+inp.dataset.r,ci=+inp.dataset.c;if(v0[ri]===ci)inp.checked=true;
+      inp.addEventListener("change",()=>{if(locked())return;const v=[...(get()||[])];v[ri]=ci;set(v)})});
+    reveal=()=>{const v=get()||[];t.querySelectorAll("tbody tr").forEach((tr,ri)=>{tr.querySelectorAll("td").forEach((td,k)=>{if(!k)return;const ci=k-1;const inp=td.querySelector("input");inp.disabled=true;if(ci===q.ans[ri])td.classList.add("ok");else if(v[ri]===ci)td.classList.add("bad")})})}}
+  else if(q.type==="drop"){card.appendChild(el('<p class="stem">'+esc(q.stem)+'</p>'));
+    let h='<div class="droptext">'+esc(q.text).replace(/\{(\d)\}/g,(_,k)=>'<select data-k="'+k+'" id="'+q.id+'-s'+k+'" aria-label="Choice '+(+k+1)+'"><option value="-1">Choose…</option>'+q.menus[k].map((o,i)=>'<option value="'+i+'">'+esc(o)+'</option>').join("")+'</select>')+'</div>';
+    const d=el(h);card.appendChild(d);const v0=get()||[];d.querySelectorAll("select").forEach(s=>{const k=+s.dataset.k;if(typeof v0[k]==="number")s.value=v0[k];s.addEventListener("change",()=>{if(locked())return;const v=[...(get()||[])];v[k]=+s.value;set(v)})});
+    reveal=()=>{const v=get()||[];d.querySelectorAll("select").forEach(s=>{const k=+s.dataset.k;s.disabled=true;s.classList.add(v[k]===q.ans[k]?"ok":"bad");if(v[k]!==q.ans[k])s.insertAdjacentHTML("afterend",' <b style="color:var(--ok);font-family:var(--body);font-size:.85rem">('+esc(q.menus[k][q.ans[k]])+')</b>')})}}
+  else if(q.type==="order"){card.appendChild(el('<p class="stem">'+esc(q.stem)+'</p>'));const ul=el('<ol class="olist"></ol>');card.appendChild(ul);
+    const cur=()=>{const v=get();return v&&v.length?v:q.start.slice()};
+    const draw=()=>{ul.innerHTML="";cur().forEach((it,pos)=>{const li=el('<li class="orow"><span class="pos">'+(pos+1)+'</span><span class="txt">'+esc(q.items[it])+'</span><span class="mv"><button type="button" aria-label="Move up">▲</button><button type="button" aria-label="Move down">▼</button></span></li>');
+      const [up,dn]=li.querySelectorAll("button");up.disabled=pos===0;dn.disabled=pos===q.items.length-1;
+      const mv=d=>{if(locked())return;const v=cur().slice();const j=pos+d;[v[pos],v[j]]=[v[j],v[pos]];set(v);draw()};
+      up.addEventListener("click",()=>mv(-1));dn.addEventListener("click",()=>mv(1));ul.appendChild(li)})};
+    draw();card.appendChild(el('<div class="typ" style="margin-top:6px">Use ▲ ▼ to move events. (First = top.)</div>'));
+    reveal=()=>{ul.querySelectorAll(".orow").forEach((li,pos)=>{li.querySelectorAll("button").forEach(b=>b.disabled=true);li.classList.add(cur()[pos]===pos?"ok":"bad")});
+      if(!cur().every((x,i)=>x===i))card.insertAdjacentHTML("beforeend",'<div class="typ" style="margin-top:8px;color:var(--ok)">Correct order: '+q.items.map((t,i)=>(i+1)+". "+esc(t)).join(" → ")+'</div>')}}
+  card.reveal=reveal;return card}
+
+/* ---------- views ---------- */
+const main=$("#main");
+function go(v){hush();S.view=v;save();render();window.scrollTo(0,0)}
+function render(){main.innerHTML="";const v=S.view;
+  if(v.v==="mod"){const m=MODS.find(x=>x.code===v.code);if(m){main.appendChild(modView(m,v.tab||"learn"));return}}
+  if(v.v==="scores"){main.appendChild(scoresView());return}
+  main.appendChild(homeView())}
+$("#homeBtn").addEventListener("click",()=>go({v:"home"}));
+$("#scoresBtn").addEventListener("click",()=>go({v:"scores"}));
+
+function homeView(){const w=el('<div></div>');
+  const hero=el('<div class="hero"><div><span class="label" style="--c:var(--coral)"><span class="dot"></span>Grade 6 · Florida B.E.S.T. · FAST ELA Reading</span><h1 style="margin-top:6px">Unlock every <em>FAST</em> reading skill</h1><p>There are 12 skills here, the same benchmarks on your FAST score report. For each one, <b>Learn</b> it with a short tutorial and a quick check, then <b>Practice</b> with FAST-style questions. In Practice you get <b>one try</b>, just like the real test. When you submit, you’ll see your score and an explanation for every question.</p></div><div class="biglogo"><svg viewBox="0 0 160 120" role="img" aria-label="The Literacy Locksmith logo"><use href="#logo"/></svg><div class="wm"><b class="t1">The</b> <b class="t2">Literacy</b><br><b class="t3">Locksmith</b></div><div class="tag">Unlocking Skills. Opening Minds. Building Readers.</div></div></div>');
+  const left=hero.firstElementChild;
+  left.querySelector(".label").appendChild(lb("Unlock every FAST reading skill. There are 12 skills here, the same benchmarks on your FAST score report. For each one, Learn it with a short tutorial and a quick check, then Practice with FAST-style questions. In Practice you get one try, just like the real test. When you submit, you'll see your score and an explanation for every question. Type your name, then choose a skill."));
+  const nb=el('<div class="namebox"><label class="sr" for="stuName">Your name</label><input id="stuName" placeholder="Type your first name" autocomplete="off"><button type="button" class="big-btn" style="--c:var(--coral)">Save name</button><span class="typ" aria-live="polite"></span></div>');
+  nb.querySelector("input").value=S.name||"";nb.querySelector("button").addEventListener("click",()=>{S.name=nb.querySelector("input").value.trim();save();nb.querySelector(".typ").textContent=S.name?"Hi, "+S.name+"! Pick a skill below.":"Type your name first."});
+  left.appendChild(nb);
+  left.appendChild(el('<div class="howto" style="--c:var(--blue)"><div><b>1 · Learn</b>What it means, how FAST asks it, Locksmith steps, a worked example, and a quick check.</div><div><b>2 · Practice</b>A passage plus 5–7 FAST-style questions labeled DOK 1, 2, or 3.</div><div><b>3 · My Scores</b>Your points for every skill, laid out like your FAST report.</div></div>'));
+  w.appendChild(hero);
+  CATS.forEach(c=>{const mods=MODS.filter(m=>m.cat===c.n);let p=0,x=0,done=0;mods.forEach(m=>{const s=modScore(m);if(s){p+=s.p;x+=s.x;done++}});
+    const sec=el('<section class="cat" style="--cc:'+c.color+'"><div class="cat-h"><span class="n">'+c.n+'</span><h2>'+esc(c.name)+'</h2><span class="sum">'+(done?done+" of "+mods.length+" practiced · "+p+"/"+x+" points":mods.length+" skills")+'</span></div><div class="cards"></div></section>');
+    mods.forEach(m=>{const s=modScore(m);const[lv,cls]=level(s?s.pct:null);const st=S.mods[m.code];
+      const card=el('<button type="button" class="mcard" style="--cc:'+m.color+'"><span class="code">'+m.code+'</span><h3>'+esc(m.short)+'</h3><p>'+esc(m.bench)+'</p><span class="st"></span></button>');
+      const stEl=card.querySelector(".st");
+      if(s){stEl.innerHTML='<span class="chip '+cls+'">'+lv+'</span><span class="minibar"><i style="width:'+s.pct+'%"></i></span><b style="font-variant-numeric:tabular-nums">'+s.p+'/'+s.x+'</b>'}
+      else stEl.innerHTML=st&&st.learned?'<span class="chip l">Learned · ready to practice</span>':'<span class="chip">Not started</span>';
+      card.addEventListener("click",()=>go({v:"mod",code:m.code,tab:s?"practice":"learn"}));sec.querySelector(".cards").appendChild(card)});
+    w.appendChild(sec)});
+  return w}
+
+function modView(m,tab){const w=el('<div style="--c:'+m.color+'"></div>');
+  const head=el('<div class="mod-head"><div><span class="code">'+m.code+'</span><h2 style="margin-top:6px">'+esc(m.short)+'</h2><p>'+esc(m.bench)+'</p></div><button type="button" class="back">All skills</button></div>');
+  head.querySelector(".back").addEventListener("click",()=>go({v:"home"}));w.appendChild(head);
+  const tabs=el('<div class="tabs" role="tablist"><button type="button" class="tab" role="tab" data-t="learn"><span class="n">1</span>Learn</button><button type="button" class="tab" role="tab" data-t="practice"><span class="n">2</span>Practice</button></div>');
+  tabs.querySelectorAll(".tab").forEach(b=>{b.setAttribute("aria-selected",b.dataset.t===tab);b.addEventListener("click",()=>go({v:"mod",code:m.code,tab:b.dataset.t}))});w.appendChild(tabs);
+  w.appendChild(tab==="learn"?learnView(m):practiceView(m));return w}
+
+function learnView(m){const Lr=m.learn;const g=el('<div class="grid2"></div>');const a=el('<div class="stack"></div>'),b=el('<div class="stack"></div>');
+  const what=el('<div class="card what"><div class="label"><span class="dot"></span>What it means</div><h3>'+esc(m.short)+'</h3><p>'+esc(Lr.what)+'</p></div>');what.querySelector(".label").appendChild(lb(Lr.what));a.appendChild(what);
+  const asks=el('<div class="card"><div class="label"><span class="dot"></span>How FAST asks it</div><ul class="asks">'+Lr.asks.map(s=>'<li>'+esc(s)+'</li>').join("")+'</ul></div>');asks.querySelector(".label").appendChild(lb("Here is how FAST asks about this skill. "+Lr.asks.join(" ")));a.appendChild(asks);
+  const voc=el('<div class="card"><div class="label"><span class="dot"></span>Key words · tap to flip</div><div class="vocab"></div></div>');
+  Lr.words.forEach(([w1,s1,d])=>{const f=el('<button type="button" class="flip" aria-pressed="false"><div class="in"><div class="f"><b>'+esc(w1)+'</b><small>'+esc(s1)+'</small></div><div class="b">'+esc(d)+'</div></div></button>');
+    f.addEventListener("click",()=>{const on=f.getAttribute("aria-pressed")!=="true";f.setAttribute("aria-pressed",on);if(on)say(w1+". "+d)});voc.querySelector(".vocab").appendChild(f)});a.appendChild(voc);
+  const steps=el('<div class="card"><div class="label"><span class="dot"></span>Locksmith steps</div><ol class="steps">'+Lr.steps.map(s=>'<li><span>'+esc(s)+'</span></li>').join("")+'</ol></div>');steps.querySelector(".label").appendChild(lb("Locksmith steps. "+Lr.steps.map((s,i)=>"Step "+(i+1)+". "+s).join(" ")));b.appendChild(steps);
+  const E=Lr.example;const ex=el('<div class="card"><div class="label"><span class="dot"></span>Watch me do it</div><div class="ex-text"></div><p class="stem" style="margin-top:10px">'+esc(E.q)+'</p><button type="button" class="small-btn">Show my thinking</button><div class="think" hidden><p style="margin:0"><b>Answer:</b> '+esc(E.a)+'</p><p style="margin:.5em 0 0"><b>My thinking:</b> '+esc(E.think)+'</p></div></div>');
+  ex.querySelector(".ex-text").textContent=E.text;ex.querySelector(".label").appendChild(lb(()=>E.text+" Question: "+E.q));
+  ex.querySelector(".small-btn").addEventListener("click",e=>{const t=ex.querySelector(".think");t.hidden=!t.hidden;e.currentTarget.textContent=t.hidden?"Show my thinking":"Hide my thinking";if(!t.hidden)say("Answer. "+E.a+". My thinking. "+E.think)});b.appendChild(ex);
+  /* quick check */
+  const C=Lr.check;const st=M(m.code);let pickd=st.learned?C.ans:null,tries=0;
+  const qc=el('<div class="card" style="border-color:var(--gold)"><div class="label" style="--c:var(--gold-ink)"><span class="dot" style="background:var(--gold)"></span>Quick check · try as many times as you need</div><p class="stem" style="margin-top:8px">'+esc(C.stem)+'</p></div>');
+  qc.querySelector(".label").appendChild(lb(()=>C.stem+". "+C.opts.map((o,i)=>L[i]+". "+o).join(". ")));
+  const box=optList(C,()=>pickd,v=>{pickd=v},false,()=>st.learned&&pickd===C.ans&&qc.dataset.done==="1");qc.appendChild(box);
+  const act=el('<div style="margin-top:10px"><button type="button" class="small-btn">Check</button></div>');qc.appendChild(act);const fb=el('<div class="qc-fb" hidden aria-live="polite"></div>');qc.appendChild(fb);
+  const ready=el('<div class="card ready" hidden><div><h3 style="margin:0">Skill learned!</h3><div class="typ">Now try the FAST-style practice. Remember: one try.</div></div><button type="button" class="big-btn">Start practice</button></div>');
+  ready.querySelector("button").addEventListener("click",()=>go({v:"mod",code:m.code,tab:"practice"}));
+  function win(){qc.dataset.done="1";fb.hidden=false;fb.className="qc-fb ok";fb.innerHTML="<b>Yes!</b> "+esc(C.why);box.reveal(C.ans);act.hidden=true;ready.hidden=false;if(!st.learned){st.learned=true;save();burst(qc,14)}}
+  act.querySelector("button").addEventListener("click",()=>{if(pickd==null){fb.hidden=false;fb.className="qc-fb hint";fb.textContent="Pick an answer first.";return}
+    if(pickd===C.ans)win();else{tries++;fb.hidden=false;fb.className="qc-fb hint";fb.innerHTML="<b>Not yet.</b> Hint: "+esc(C.hint)}});
+  if(st.learned)win();
+  b.appendChild(qc);b.appendChild(ready);
+  if(S.mods[m.code]&&S.mods[m.code].learned)ready.hidden=false;
+  g.appendChild(a);g.appendChild(b);return g}
+
+function practiceView(m){const st=M(m.code);const wrap=el('<div></div>');
+  if(st.submitted)wrap.appendChild(summaryCard(m,true));
+  const g=el('<div class="grid2" style="margin-top:'+(st.submitted?"16px":"0")+'"></div>');g.appendChild(renderPassage(m.passage));
+  const col=el('<div class="stack"></div>');const cards=[];
+  const locked=()=>!!st.submitted;
+  const bar=el('<div class="submitbar"><div class="prog"><span class="pt"></span><div class="track"><i></i></div></div><button type="button" class="big-btn">Submit answers</button><span class="typ warn" aria-live="polite"></span></div>');
+  function upd(){const n=m.items.filter(q=>answered(q,st.ans[q.id])).length;bar.querySelector(".pt").textContent="Answered "+n+" of "+m.items.length;bar.querySelector("i").style.width=(n/m.items.length*100)+"%";bar.dataset.n=n;bar.querySelector(".warn").textContent="";armed=false;bar.querySelector(".big-btn").textContent="Submit answers"}
+  m.items.forEach((q,i)=>{const c=buildItem(q,i+1,{get:()=>st.ans[q.id],set:v=>{st.ans[q.id]=v;save()},locked,onChange:upd});cards.push(c);col.appendChild(c)});
+  let armed=false;
+  bar.querySelector(".big-btn").addEventListener("click",()=>{const n=+bar.dataset.n;
+    if(n<m.items.length&&!armed){armed=true;bar.querySelector(".warn").textContent=(m.items.length-n)+" question"+(m.items.length-n>1?"s are":" is")+" not finished. Tap Submit again to turn it in anyway.";bar.querySelector(".big-btn").textContent="Submit anyway";return}
+    st.submitted=true;st.at=Date.now();save();go({v:"mod",code:m.code,tab:"practice"});const s=modScore(m);if(s&&s.pct>=60)burst(null,s.pct>=80?160:70)});
+  if(st.submitted){cards.forEach((c,i)=>{const q=m.items[i];c.reveal();const pts=score(q,st.ans[q.id]),mx=maxPts(q);c.classList.add(pts===mx?"right":"wrong");
+    c.appendChild(el('<div class="why '+(pts===mx?"ok":"bad")+'"><b>'+(pts===mx?"Correct!":pts?"Partly correct ("+pts+" of "+mx+")":"Not this time.")+'</b> '+esc(q.why)+'</div>'))});
+    col.appendChild(summaryCard(m,false))}
+  else{col.appendChild(bar);upd()}
+  g.appendChild(col);wrap.appendChild(g);return wrap}
+
+function ring(pct,color){const r=48,c=2*Math.PI*r;return '<svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="'+r+'" fill="none" stroke="var(--line)" stroke-width="12"/><circle cx="60" cy="60" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+(c*pct/100)+' '+c+'" transform="rotate(-90 60 60)"/><text x="60" y="68" text-anchor="middle" font-size="26">'+pct+'%</text></svg>'}
+function summaryCard(m,topOne){const s=modScore(m);const st=S.mods[m.code];const[lv,cls,msg]=level(s.pct);
+  const col=s.pct>=80?"var(--ok)":s.pct>=60?"var(--gold)":"var(--coral)";
+  const c=el('<div class="summary"><div class="sum-top">'+ring(s.pct,col)+'<div style="min-width:0;flex:1 1 220px"><div class="label" style="--c:var(--gold-ink)"><span class="dot" style="background:var(--gold)"></span>Your score summary'+(S.name?" · "+esc(S.name):"")+'</div><h3>'+s.p+' of '+s.x+' points</h3><div class="lvl"><span class="chip '+cls+'">'+lv+'</span></div><p style="margin:.4em 0 0">'+esc(msg)+'</p></div></div><div class="sum-grid"></div></div>');
+  const sg=c.querySelector(".sum-grid");
+  const qd=el('<div class="tile"><div class="k">Question by question</div><div class="dots"></div></div>');
+  m.items.forEach((q,i)=>{const p=score(q,st.ans[q.id]),mx=maxPts(q);qd.querySelector(".dots").appendChild(el('<span class="'+(p===mx?"y":p?"p":"n")+'" title="Question '+(i+1)+': '+p+'/'+mx+'">'+(i+1)+'</span>'))});sg.appendChild(qd);
+  const dk=el('<div class="tile"><div class="k">By DOK level</div><div class="bars"></div></div>');const cc={1:"var(--teal)",2:"var(--violet)",3:"var(--coral)"};
+  [1,2,3].forEach(l=>{const[a,b]=s.dok[l];if(!b)return;dk.querySelector(".bars").appendChild(el('<div class="bar"><span>DOK '+l+'</span><div class="tr"><div class="fl" style="width:'+Math.round(a/b*100)+'%;background:'+cc[l]+'"></div></div><span>'+a+'/'+b+'</span></div>'))});sg.appendChild(dk);
+  const nx=el('<div class="tile"><div class="k">What’s next</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div></div>');
+  const nb=nx.querySelector("div:last-child");
+  const next=MODS.find(x=>!(S.mods[x.code]&&S.mods[x.code].submitted));
+  const b1=el('<button type="button" class="small-btn">'+(topOne?"Review answers below":"See all my scores")+'</button>');b1.addEventListener("click",()=>{if(topOne){const f=document.querySelector(".item");if(f)f.scrollIntoView({behavior:"smooth"})}else go({v:"scores"})});nb.appendChild(b1);
+  if(next){const b2=el('<button type="button" class="small-btn" style="--c:'+next.color+'">Next skill: '+esc(next.short)+'</button>');b2.addEventListener("click",()=>go({v:"mod",code:next.code,tab:"learn"}));nb.appendChild(b2)}
+  sg.appendChild(nx);
+  c.querySelector(".label").appendChild(lb("Your score: "+s.p+" of "+s.x+" points, "+s.pct+" percent. "+lv+". "+msg));
+  return c}
+
+function scoresView(){const w=el('<div></div>');let P=0,X=0,done=0;const dok={1:[0,0],2:[0,0],3:[0,0]};
+  MODS.forEach(m=>{const s=modScore(m);if(s){P+=s.p;X+=s.x;done++;[1,2,3].forEach(l=>{dok[l][0]+=s.dok[l][0];dok[l][1]+=s.dok[l][1]})}});
+  const pct=X?Math.round(P/X*100):0;const col=pct>=80?"var(--ok)":pct>=60?"var(--gold)":"var(--coral)";
+  const top=el('<div class="summary" style="margin-top:16px"><div class="sum-top">'+ring(pct,col)+'<div style="flex:1 1 240px;min-width:0"><div class="label" style="--c:var(--gold-ink)"><span class="dot" style="background:var(--gold)"></span>My FAST Practice Scores</div><h3>'+esc(S.name||"Student")+'</h3><p style="margin:.3em 0 0">'+(done?"You have practiced <b>"+done+" of 12</b> skills and earned <b>"+P+" of "+X+"</b> points.":"You haven’t submitted a practice set yet. Pick a skill to get started!")+'</p></div></div><div class="sum-grid"></div></div>');
+  const sg=top.querySelector(".sum-grid");
+  sg.appendChild(el('<div class="tile"><div class="k">Skills practiced</div><div class="v">'+done+' / 12</div></div>'));
+  const mast=MODS.filter(m=>{const s=modScore(m);return s&&s.pct>=80}).length;
+  sg.appendChild(el('<div class="tile"><div class="k">Skills mastered (80%+)</div><div class="v">'+mast+'</div></div>'));
+  const dk=el('<div class="tile"><div class="k">By DOK level</div><div class="bars"></div></div>');const cc={1:"var(--teal)",2:"var(--violet)",3:"var(--coral)"};
+  [1,2,3].forEach(l=>{const[a,b]=dok[l];dk.querySelector(".bars").appendChild(el('<div class="bar"><span>DOK '+l+'</span><div class="tr"><div class="fl" style="width:'+(b?Math.round(a/b*100):0)+'%;background:'+cc[l]+'"></div></div><span>'+a+'/'+b+'</span></div>'))});sg.appendChild(dk);
+  const scored=MODS.map(m=>({m,s:modScore(m)})).filter(o=>o.s);
+  if(scored.length){const best=scored.slice().sort((a,b)=>b.s.pct-a.s.pct)[0],low=scored.slice().sort((a,b)=>a.s.pct-b.s.pct)[0];
+    sg.appendChild(el('<div class="tile"><div class="k">Strongest skill</div><div style="font-weight:700;margin-top:4px">'+esc(best.m.short)+' · '+best.s.pct+'%</div><div class="k" style="margin-top:8px">Practice next</div><div style="font-weight:700;margin-top:4px">'+esc(low.m.short)+' · '+low.s.pct+'%</div></div>'))}
+  w.appendChild(top);
+  CATS.forEach(c=>{const mods=MODS.filter(m=>m.cat===c.n);let p=0,x=0;mods.forEach(m=>{const s=modScore(m);if(s){p+=s.p;x+=s.x}});
+    const sec=el('<div class="rep-cat" style="--cc:'+c.color+'"><h3>'+c.n+'. '+esc(c.name)+'<span>'+(x?p+" / "+x+" points":"not started")+'</span></h3><div class="tbl"><table class="rep-table"><thead><tr><th>Benchmark</th><th style="text-align:center">Points Earned</th><th style="text-align:center">Points Possible</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div></div>');
+    mods.forEach(m=>{const s=modScore(m);const mx=m.items.reduce((a,q)=>a+maxPts(q),0);const[lv,cls]=level(s?s.pct:null);
+      const tr=el('<tr><td><b>'+esc(m.short)+'</b><div class="bn">'+m.code+' · '+esc(m.bench)+'</div></td><td class="num"><b>'+(s?s.p:"–")+'</b></td><td class="num">'+mx+'</td><td><span class="chip '+cls+'">'+lv+(s?" · "+s.pct+"%":"")+'</span></td><td><button type="button" class="small-btn" style="--c:'+m.color+'">'+(s?"Review":"Start")+'</button></td></tr>');
+      tr.querySelector("button").addEventListener("click",()=>go({v:"mod",code:m.code,tab:s?"practice":"learn"}));sec.querySelector("tbody").appendChild(tr)});
+    w.appendChild(sec)});
+  const lines=["FAST READING COACH - The Literacy Locksmith","Student: "+(S.name||""),"Date: "+new Date().toLocaleDateString(),"Overall: "+P+"/"+X+" points ("+pct+"%) - "+done+" of 12 skills practiced","DOK 1: "+dok[1][0]+"/"+dok[1][1]+"   DOK 2: "+dok[2][0]+"/"+dok[2][1]+"   DOK 3: "+dok[3][0]+"/"+dok[3][1],""];
+  CATS.forEach(c=>{lines.push(c.n+". "+c.name.toUpperCase());MODS.filter(m=>m.cat===c.n).forEach(m=>{const s=modScore(m);lines.push("  "+m.code+" "+m.short+": "+(s?s.p+"/"+s.x+" ("+s.pct+"%) "+level(s.pct)[0]:"not started"))})});
+  const txt=lines.join("\n");
+  const cp=el('<div class="card" style="margin-top:16px;--c:var(--green)"><div class="label"><span class="dot"></span>Turn it in</div><p>Copy your score report and paste it where your teacher asks (Canvas, email, or a doc).</p><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="small-btn">Copy my score report</button><span class="typ" aria-live="polite"></span></div><pre class="copybox" tabindex="0"></pre></div>');
+  cp.querySelector("pre").textContent=txt;
+  cp.querySelector("button").addEventListener("click",()=>{const msg=cp.querySelector(".typ"),pre=cp.querySelector("pre");const sel=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);msg.textContent="Text selected. Press Copy (or Ctrl/Cmd + C)."};
+    try{navigator.clipboard.writeText(txt).then(()=>msg.textContent="Copied!",sel)}catch(e){sel()}});
+  w.appendChild(cp);return w}
+
+/* ---------- confetti ---------- */
+const cv=$("#confetti"),cx=cv.getContext("2d");let parts=[],anim=null;const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+function burst(from,n){if(reduce)return;const d=window.devicePixelRatio||1;cv.width=innerWidth*d;cv.height=innerHeight*d;let x=innerWidth/2,y=innerHeight/3;if(from){const r=from.getBoundingClientRect();x=r.left+r.width/2;y=r.top+30}
+  const cs=["#F2B21B","#EF5B52","#2A73E0","#0E9C98","#7656DD","#23995A"];for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.random()-.5)*(from?6:14),vy:-Math.random()*(from?6:12)-2,s:4+Math.random()*6,c:cs[i%6],r:Math.random()*6,l:0});if(!anim)anim=requestAnimationFrame(step)}
+function step(){const d=window.devicePixelRatio||1;cx.clearRect(0,0,cv.width,cv.height);parts.forEach(p=>{p.vy+=.25;p.x+=p.vx;p.y+=p.vy;p.r+=.1;p.l++;cx.save();cx.translate(p.x*d,p.y*d);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.s*d/2,-p.s*d/4,p.s*d,p.s*d/2);cx.restore()});
+  parts=parts.filter(p=>p.y<innerHeight+40&&p.l<240);anim=parts.length?requestAnimationFrame(step):(cx.clearRect(0,0,cv.width,cv.height),null)}
+
+/* ---------- teacher ---------- */
+const tp=$("#teacher");
+$("#tBtn").addEventListener("click",()=>{tp.hidden=!tp.hidden;if(!tp.hidden)lockT()});
+function lockT(){tp.innerHTML="";const f=el('<div style="--c:var(--violet)"><div class="label"><span class="dot"></span>Teacher tools</div><p>Enter the teacher code to see the answer key and reset options.</p><div class="namebox" style="margin-top:0"><label class="sr" for="tcode">Teacher code</label><input id="tcode" type="password" placeholder="Teacher code"><button type="button" class="small-btn">Open</button></div><div class="typ" aria-live="polite"></div></div>');
+  f.querySelector("button").addEventListener("click",()=>{if(f.querySelector("input").value.trim().toUpperCase()==="LOCKSMITH")keyT();else f.querySelector(".typ").textContent="That code did not match."});tp.appendChild(f)}
+function ansText(q){switch(q.type){case"mc":return L[q.ans]+". "+q.opts[q.ans];case"ms":return q.ans.map(i=>L[i]).join(", ")+": "+q.ans.map(i=>q.opts[i]).join(" | ");
+  case"ebsr":return"A: "+L[q.a.ans]+" · B: "+L[q.b.ans];case"hot":return q.ans.map(i=>"“"+q.sents[i]+"”").join(" ");case"match":return q.rows.map((r,i)=>r+" → "+q.cols[q.ans[i]]).join("; ");
+  case"drop":return q.ans.map((a,i)=>q.menus[i][a]).join(" / ");case"order":return q.items.map((t,i)=>(i+1)+". "+t).join(" ")}}
+function keyT(){tp.innerHTML="";const c=el('<div style="--c:var(--violet)"><div class="label"><span class="dot"></span>Answer key (letters match what students see)</div><div class="tbl"><table class="keytable"><thead><tr><th>Skill</th><th>Q</th><th>DOK</th><th>Answer</th></tr></thead><tbody></tbody></table></div><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px"><label for="rsSel" class="typ">Reset one skill:</label><select id="rsSel"></select><button type="button" class="small-btn" id="rs1">Reset skill</button><button type="button" class="small-btn" style="--c:var(--coral)" id="rsAll">Reset everything on this device</button><span class="typ" aria-live="polite" id="rsMsg"></span></div></div>');
+  const tb=c.querySelector("tbody");MODS.forEach(m=>m.items.forEach((q,i)=>tb.appendChild(el('<tr><td>'+m.code.replace("ELA.6.","")+' '+esc(m.short)+'</td><td>'+(i+1)+'</td><td>'+q.dok+'</td><td>'+esc(ansText(q))+'</td></tr>'))));
+  const sel=c.querySelector("#rsSel");MODS.forEach(m=>sel.appendChild(el('<option value="'+m.code+'">'+m.code+' '+esc(m.short)+'</option>')));
+  c.querySelector("#rs1").addEventListener("click",()=>{delete S.mods[sel.value];save();c.querySelector("#rsMsg").textContent=sel.value+" was reset.";render()});
+  let armed=false;c.querySelector("#rsAll").addEventListener("click",e=>{if(!armed){armed=true;e.currentTarget.textContent="Tap again to erase all answers";return}try{localStorage.removeItem(KEY)}catch(x){}S={name:"",mods:{},view:{v:"home"}};render();tp.hidden=true});
+  tp.appendChild(c)}
+
+render();
+})();
+
+</script>
+
+</body></html>
